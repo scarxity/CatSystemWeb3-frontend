@@ -68,7 +68,7 @@ export default function withAuth<T>(
 	function ComponentWithAuth(props: T) {
 		const router = useRouter();
 		const params = useSearchParams();
-		const redirect = params.get("redirect");
+		const redirect = params?.get("redirect");
 		const pathName = usePathname();
 
 		//#region  //*=========== STORE ===========

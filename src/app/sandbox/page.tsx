@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout";
 
 export default function SandboxPage() {
 	return (
-		<Layout withNavbar withFooter>
+		<Layout withNavbar>
 			<div className="flex flex-col items-center justify-center h-screen bg-white text-gray-900 gap-4">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold">Sandbox Page</h1>
