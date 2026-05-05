@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import CatCard from "@/components/cat/CatCard";
 import type { Cat } from "@/types/cat";
+import type { CatFormData } from "@/types/catForm";
+import CatFormView from "./CatFormView";
 import CatIdentityView from "./CatIdentityView";
 
 interface HomePageProps {
@@ -14,13 +15,55 @@ interface HomePageProps {
 	ownerName?: string;
 }
 
+type ViewMode =
+	| { type: "home" }
+	| { type: "detail"; cat: Cat }
+	| { type: "add" }
+	| { type: "edit"; cat: Cat };
+
 export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
-	const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
+	const [view, setView] = useState<ViewMode>({ type: "home" });
 	const catCount = cats.length;
 
-	if (selectedCat) {
+	/* ── Add / Edit save handler ──────────────────────────────── */
+	const handleSave = (data: CatFormData, _imageFile: File | null) => {
+		// TODO: call API / blockchain to persist
+		console.log("Saving cat data:", data, _imageFile);
+		alert(
+			view.type === "edit"
+				? "Data kucing berhasil diperbarui!"
+				: "Data kucing baru berhasil disimpan!",
+		);
+		setView({ type: "home" });
+	};
+
+	/* ── Render sub-views ─────────────────────────────────────── */
+	if (view.type === "detail") {
 		return (
-			<CatIdentityView cat={selectedCat} onBack={() => setSelectedCat(null)} />
+			<CatIdentityView
+				cat={view.cat}
+				onBack={() => setView({ type: "home" })}
+				onEdit={(cat) => setView({ type: "edit", cat })}
+			/>
+		);
+	}
+
+	if (view.type === "add") {
+		return (
+			<CatFormView
+				onBack={() => setView({ type: "home" })}
+				onSave={handleSave}
+			/>
+		);
+	}
+
+	if (view.type === "edit") {
+		return (
+			<CatFormView
+				cat={view.cat}
+				onBack={() => setView({ type: "detail", cat: view.cat })}
+				onSave={handleSave}
+			/>
 		);
 	}
 
@@ -69,12 +112,13 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 					{/* Section header */}
 					<div className="flex items-center justify-between mb-5">
 						<h2 className="text-[18px] font-bold text-gray-900">My Cats</h2>
-						<Link
-							href="/add"
+						<button
+							type="button"
+							onClick={() => setView({ type: "add" })}
 							className="text-[15px] font-medium text-[#4359ea] hover:underline"
 						>
 							+ Add New Cat
-						</Link>
+						</button>
 					</div>
 
 					{/* Cat grid */}
@@ -100,7 +144,7 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 								<CatCard
 									key={cat.id}
 									cat={cat}
-									onViewDetails={setSelectedCat}
+									onViewDetails={(c) => setView({ type: "detail", cat: c })}
 								/>
 							))}
 						</div>

@@ -13,9 +13,15 @@ import type { Cat } from "@/types/cat";
 interface CatIdentityViewProps {
 	cat: Cat;
 	onBack: () => void;
+	/** Called when the user taps the Edit button */
+	onEdit?: (cat: Cat) => void;
 }
 
-export default function CatIdentityView({ cat, onBack }: CatIdentityViewProps) {
+export default function CatIdentityView({
+	cat,
+	onBack,
+	onEdit,
+}: CatIdentityViewProps) {
 	const [activeTab, setActiveTab] = useState("dna");
 
 	const tabs = [
@@ -153,6 +159,7 @@ export default function CatIdentityView({ cat, onBack }: CatIdentityViewProps) {
 						{/* Edit Button */}
 						<button
 							type="button"
+							onClick={() => onEdit?.(cat)}
 							className="border border-gray-200 rounded-lg px-3 py-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-[#4359ea] hover:bg-gray-50 transition-colors"
 						>
 							<Pencil size={14} />
@@ -196,7 +203,7 @@ export default function CatIdentityView({ cat, onBack }: CatIdentityViewProps) {
 						{activeTab === "dna" && <DNATab cat={cat} />}
 						{activeTab === "bio" && <BioTab cat={cat} />}
 						{activeTab === "health" && <HealthTab cat={cat} />}
-						{activeTab === "owner" && <OwnerTab />}
+						{activeTab === "owner" && <OwnerTab cat={cat} />}
 						{activeTab === "family" && <FamilyTab cat={cat} />}
 					</div>
 				</section>
