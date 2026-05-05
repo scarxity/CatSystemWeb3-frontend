@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import CatCard from "@/components/cat/CatCard";
 import type { Cat } from "@/types/cat";
+import CatIdentityView from "./CatIdentityView";
 
 interface HomePageProps {
 	/** Cats belonging to the current user, fetched server-side */
@@ -11,7 +15,14 @@ interface HomePageProps {
 }
 
 export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
+	const [selectedCat, setSelectedCat] = useState<Cat | null>(null);
 	const catCount = cats.length;
+
+	if (selectedCat) {
+		return (
+			<CatIdentityView cat={selectedCat} onBack={() => setSelectedCat(null)} />
+		);
+	}
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col">
@@ -86,7 +97,11 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 					) : (
 						<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 							{cats.map((cat) => (
-								<CatCard key={cat.id} cat={cat} />
+								<CatCard
+									key={cat.id}
+									cat={cat}
+									onViewDetails={setSelectedCat}
+								/>
 							))}
 						</div>
 					)}
