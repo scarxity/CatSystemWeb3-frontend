@@ -1,9 +1,13 @@
-import axios, { type AxiosError } from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { GetServerSidePropsContext } from "next/types";
 import Cookies from "universal-cookie";
 
-import { getToken } from "@/lib/cookies";
+import { getToken, removeToken } from "@/lib/cookies";
 import type { UninterceptedApiError } from "@/types/api";
+
+interface RetryConfig extends InternalAxiosRequestConfig {
+	_retry?: boolean;
+}
 
 const context = <GetServerSidePropsContext>{};
 
@@ -33,7 +37,7 @@ api.interceptors.request.use((config) => {
 				throw "Api Context not found. You must call `setApiContext(context)` before calling api on server-side";
 
 			const cookies = new Cookies(context.req?.headers.cookie);
-			token = cookies.get("@sch/token");
+			token = cookies.get("@olpaw/token");
 		} else {
 			token = getToken();
 		}
@@ -48,7 +52,20 @@ api.interceptors.response.use(
 	(config) => {
 		return config;
 	},
-	(error: AxiosError<UninterceptedApiError>) => {
+	async (error: AxiosError<UninterceptedApiError>) => {
+		const originalRequest = error.config as RetryConfig;
+
+		if (
+			error.response?.status === 401 &&
+			originalRequest &&
+			!originalRequest._retry
+		) {
+			originalRequest._retry = true;
+			removeToken();
+			window.location.href = "/login?sessionExpired=true";
+			return Promise.reject(error);
+		}
+
 		// parse error
 		if (error.response?.data.message) {
 			return Promise.reject({
@@ -68,4 +85,5 @@ api.interceptors.response.use(
 		return Promise.reject(error);
 	},
 );
+
 export default api;
