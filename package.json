@@ -1,11 +1,12 @@
 {
 	"name": "next-template-v2",
 	"version": "0.1.0",
+	"type": "module",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"postbuild": "next-sitemap --config next-sitemap.config.js",
+		"postbuild": "next-sitemap --config next-sitemap.config.cjs",
 		"start": "next start",
 		"lint": "npx @biomejs/biome lint .",
 		"lint:write": "npx @biomejs/biome lint --write .",
@@ -18,7 +19,9 @@
 		"typecheck": "npx tsc --noEmit"
 	},
 	"dependencies": {
+		"@farcaster/mini-app-solana": "^2.0.0",
 		"@headlessui/react": "2.2.4",
+		"@privy-io/react-auth": "^3.23.1",
 		"@tanstack/react-query": "5.81.5",
 		"@tanstack/react-table": "8.21.3",
 		"auto-zustand-selectors-hook": "3.0.1",

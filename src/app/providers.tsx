@@ -1,5 +1,6 @@
 "use client";
 
+import { PrivyProvider } from "@privy-io/react-auth";
 import {
 	QueryClient,
 	QueryClientProvider,
@@ -26,10 +27,29 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 	return (
 		// biome-ignore lint/complexity/noUselessFragments: Prevent unvalid react child if modules are removed
 		<>
-			<QueryClientProvider client={queryClient}>
-				<Toaster position="top-center" />
-				<NuqsAdapter>{children}</NuqsAdapter>
-			</QueryClientProvider>
+			<PrivyProvider
+				appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
+				config={{
+					appearance: {
+						theme: "light",
+						accentColor: "#6366f1",
+						logo: "/assets/Logo Biru.png",
+						landingHeader: "Welcome to OLPaw",
+						walletChainType: "solana-only",
+					},
+					loginMethods: ["google", "wallet"],
+					embeddedWallets: {
+						solana: {
+							createOnLogin: "users-without-wallets",
+						},
+					},
+				}}
+			>
+				<QueryClientProvider client={queryClient}>
+					<Toaster position="top-center" />
+					<NuqsAdapter>{children}</NuqsAdapter>
+				</QueryClientProvider>
+			</PrivyProvider>
 		</>
 	);
 }
