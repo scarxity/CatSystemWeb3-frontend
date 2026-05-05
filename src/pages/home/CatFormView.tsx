@@ -337,11 +337,35 @@ export default function CatFormView({ cat, onBack, onSave }: CatFormViewProps) {
 						field="eyeColorGene"
 						placeholder="e.g. Green (G/D)"
 					/>
-					<Field
-						label="Blood Type"
-						field="bloodType"
-						placeholder="e.g. Type A"
-					/>
+					{/* Blood Type dropdown */}
+					<div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+						<label
+							htmlFor="field-bloodType"
+							className="text-[13px] font-medium text-gray-600 sm:w-[160px] shrink-0"
+						>
+							Blood Type
+						</label>
+						<select
+							id="field-bloodType"
+							value={form.bloodType}
+							onChange={(e) => update("bloodType", e.target.value)}
+							className="flex-1 h-10 px-3 rounded-xl border border-gray-200 bg-white text-[13px] text-gray-900
+                               focus:outline-none focus:ring-2 focus:ring-[#4359ea]/30 focus:border-[#4359ea] transition-all
+                               appearance-none cursor-pointer"
+							style={{
+								backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+								backgroundRepeat: "no-repeat",
+								backgroundPosition: "right 12px center",
+							}}
+						>
+							<option value="" disabled>
+								Pilih Blood Type
+							</option>
+							<option value="Type A">Type A</option>
+							<option value="Type B">Type B</option>
+							<option value="Type AB">Type AB</option>
+						</select>
+					</div>
 					<Field
 						label="Genetic Diversity"
 						field="geneticDiversity"
