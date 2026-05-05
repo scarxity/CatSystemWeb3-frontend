@@ -23,6 +23,33 @@ export const MOCK_CATS: Cat[] = [
 		registeredAt: "May 12, 2024",
 		imageUrl:
 			"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=200&auto=format&fit=crop",
+		weight: "4.2 kg",
+		eyeColor: "Hazel",
+		activityLevel: "High",
+		microchip: "#982138901233",
+		about:
+			"Luna is a beautiful 2 yrs old female Domestic Shorthair. Known for her playful and affectionate nature, she loves to spend hours chasing laser pointers.",
+		dnaProfile: {
+			breedPredisposition: "Domestic Shorthair",
+			coatPattern: "Silver Tabby",
+			eyeColorGene: "Green (G/D)",
+			bloodType: "Type A",
+			geneticDiversity: "High",
+			geneticDiversityPercentage: 85,
+			inbreedingCoefficient: "2.1% (Low)",
+		},
+		traits: {
+			furLengthGene: "Short Hair (ss)",
+			dilutionGene: "Non-dilute (DD)",
+			whiteSpotting: "None (S/s)",
+			brachycephalicGene: "Negative (N/N)",
+		},
+		ancestry: [
+			{ region: "European Domestic", percentage: 62, color: "bg-[#4359ea]" },
+			{ region: "Asian Domestic", percentage: 23, color: "bg-purple-600" },
+			{ region: "African Wildcat", percentage: 10, color: "bg-cyan-200" },
+			{ region: "Middle Eastern", percentage: 5, color: "bg-orange-400" },
+		],
 	},
 	{
 		id: "cat-002",
