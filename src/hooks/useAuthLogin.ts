@@ -13,8 +13,10 @@ import type { AuthWeb3Response } from "@/types/api";
 export const useAuthLogin = () => {
 	const router = useRouter();
 
+	console.log("yaya");
 	return useMutation({
 		mutationFn: async (privyToken: string) => {
+			console.log("CALLING API");
 			const { data } = await api.post<AuthWeb3Response>("/auth/web3", {
 				token: privyToken,
 			});

@@ -1,6 +1,7 @@
 "use client";
 
 import { PrivyProvider } from "@privy-io/react-auth";
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana";
 import {
 	QueryClient,
 	QueryClientProvider,
@@ -8,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
+import { createSolanaRpc, createSolanaRpcSubscriptions } from "@solana/kit";
 
 import api from "@/lib/api";
 
@@ -30,6 +32,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 			<PrivyProvider
 				appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || ""}
 				config={{
+					solana: {
+						rpcs: {
+							"solana:testnet": {
+								rpc: createSolanaRpc(
+									"https://api.testnet.solana.com",
+								) as any,
+								rpcSubscriptions: createSolanaRpcSubscriptions(
+									"wss://api.testnet.solana.com",
+								),
+							},
+						},
+					},
 					appearance: {
 						theme: "light",
 						accentColor: "#6366f1",
@@ -41,6 +55,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 					embeddedWallets: {
 						solana: {
 							createOnLogin: "users-without-wallets",
+						},
+					},
+					externalWallets: {
+						solana: {
+							connectors: toSolanaWalletConnectors(), // For detecting EOA browser wallets
 						},
 					},
 				}}
