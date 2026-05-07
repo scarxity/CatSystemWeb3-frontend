@@ -31,3 +31,18 @@ export type UninterceptedApiError = {
 	status: boolean;
 	message: string | Record<string, string[]>;
 };
+
+// POST /auth/web3
+export type AuthWeb3Request = {
+	token: string;
+};
+
+export type AuthWeb3Response = {
+	accessToken: string;
+};
+
+// GET /me
+export type MeResponse = {
+	id: string;
+	wallet: string;
+};

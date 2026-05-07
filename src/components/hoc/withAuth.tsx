@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "react-hot-toast";
 import Loading from "@/app/loading";
@@ -23,6 +23,7 @@ const LOGIN_ROUTE = "/login";
 
 export enum RouteRole {
 	public,
+	auth,
 	writer,
 	admin,
 }
@@ -33,6 +34,7 @@ const hasAccess = (
 	userRole: Role,
 	routeRole: keyof typeof RouteRole,
 ): boolean => {
+	if (routeRole === "auth") return true;
 	if (userRole === "admin") return true;
 
 	switch (userRole) {
@@ -51,7 +53,7 @@ const getDefaultRoute = (role: Role): string => {
 		case "writer":
 			return WRITER_ROUTE;
 		default:
-			return LOGIN_ROUTE;
+			return "/";
 	}
 };
 
@@ -61,14 +63,12 @@ const getDefaultRoute = (role: Role): string => {
  * @see https://react-typescript-cheatsheet.netlify.app/docs/hoc/full_example/
  * @see https://github.com/mxthevs/nextjs-auth/blob/main/src/components/withAuth.tsx
  */
-export default function withAuth<T>(
+export default function withAuth<T extends object>(
 	Component: React.ComponentType<T>,
 	routeRole: keyof typeof RouteRole,
 ) {
 	function ComponentWithAuth(props: T) {
 		const router = useRouter();
-		const params = useSearchParams();
-		const redirect = params?.get("redirect");
 		const pathName = usePathname();
 
 		//#region  //*=========== STORE ===========
@@ -102,7 +102,7 @@ export default function withAuth<T>(
 							token,
 						});
 					} catch (_err) {
-						await removeToken();
+						removeToken();
 					} finally {
 						stopLoading();
 					}
@@ -136,16 +136,12 @@ export default function withAuth<T>(
 
 					// Handle role-based access
 					if (routeRole === "public") {
-						if (redirect) {
-							router.replace(redirect as string);
-						} else {
-							router.replace(getDefaultRoute(user.role as Role));
-						}
+						router.replace(getDefaultRoute(user.role as Role));
 					} else if (!hasAccess(user.role as Role, routeRole)) {
 						router.replace(getDefaultRoute(user.role as Role));
 					}
 				} else if (routeRole !== "public") {
-					router.replace(`${LOGIN_ROUTE}?redirect=${pathName}`);
+					router.replace(LOGIN_ROUTE);
 				}
 			};
 
@@ -156,7 +152,6 @@ export default function withAuth<T>(
 			isAuthenticated,
 			isLoading,
 			pathName,
-			redirect,
 			router,
 			user,
 			routeRole,
@@ -186,7 +181,7 @@ export default function withAuth<T>(
 			routeRole === "public" ||
 			(isAuthenticated && user && hasAccess(user.role as Role, routeRole))
 		) {
-			return <Component {...(props as T)} user={user} />;
+			return <Component {...(props as T)} />;
 		}
 
 		// Fallback loading state - this shouldn't normally be reached
