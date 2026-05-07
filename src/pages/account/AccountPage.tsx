@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { usePrivy } from "@privy-io/react-auth";
 
 interface MenuItemProps {
 	icon: React.ReactNode;
@@ -68,6 +70,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 export default function AccountPage() {
+	const router = useRouter();
+	const { logout } = usePrivy();
+
+	const handleLogout = async () => {
+		await logout();
+		router.push("/login");
+	};
+
 	return (
 		<div className="min-h-screen bg-[#f8f9fc] pb-8 pt-4 md:pt-10 px-4 sm:px-6 flex justify-center">
 			<div className="w-full max-w-[480px] md:max-w-4xl lg:max-w-5xl space-y-4 md:space-y-6">
@@ -183,6 +193,7 @@ export default function AccountPage() {
 					<div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden w-full md:w-auto md:min-w-[200px] transition-all hover:shadow-md hover:border-red-100">
 						<button
 							type="button"
+							onClick={handleLogout}
 							className="w-full flex items-center justify-center p-4 hover:bg-red-50/50 transition-colors group"
 						>
 							<LogOut className="w-5 h-5 text-red-500 mr-2 group-hover:scale-110 transition-transform" strokeWidth={2} />
