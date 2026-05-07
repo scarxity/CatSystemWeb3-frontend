@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
+import useAuthStore from "@/app/stores/useAuthStore";
+import { removeToken } from "@/lib/cookies";
 
 interface MenuItemProps {
 	icon: React.ReactNode;
@@ -70,12 +71,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 export default function AccountPage() {
-	const router = useRouter();
 	const { logout } = usePrivy();
+	const storeLogout = useAuthStore.useLogout();
 
 	const handleLogout = async () => {
+		removeToken();
 		await logout();
-		router.push("/login");
+		storeLogout();
+		window.location.href = "/login";
 	};
 
 	return (
