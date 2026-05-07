@@ -3,7 +3,6 @@
 import { useLogin, useLoginWithOAuth, usePrivy } from "@privy-io/react-auth";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useAuthLogin } from "@/hooks/useAuthLogin";
@@ -11,7 +10,6 @@ import { useAuthLogin } from "@/hooks/useAuthLogin";
 type Role = "breeder" | "cat-lover" | null;
 
 export default function LoginPage() {
-	const router = useRouter();
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
 
 	const { ready, authenticated, getAccessToken } = usePrivy();
@@ -43,12 +41,19 @@ export default function LoginPage() {
 		},
 	});
 
-	// ── Redirect if already logged in ──
+	// ── Re-authenticate with backend if Privy session already exists ──
+	// Avoids a redirect loop: if we just did router.replace("/") here, withAuth
+	// on "/" would redirect back to "/login" whenever the backend token is
+	// missing/expired, even though Privy still considers the user authenticated.
 	useEffect(() => {
-		if (ready && authenticated) {
-			router.replace("/");
-		}
-	}, [ready, authenticated, router]);
+		if (!ready || !authenticated) return;
+		getAccessToken().then((token) => {
+			if (token) authLogin.mutate(token);
+		});
+		// getAccessToken and authLogin.mutate are stable refs; ready/authenticated
+		// are the only values that should trigger this effect.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ready, authenticated]);
 
 	const isLoading = oauthLoading || authLogin.isPending;
 

@@ -1,6 +1,6 @@
 import { getMyCats } from "@/data/cats";
 import Layout from "@/layouts/Layout";
-import HomePage from "@/pages/home/HomePage";
+import HomePage from "@/pages/home/ProtectedHomePage";
 
 /**
  * Next.js App Router entry point for "/".
