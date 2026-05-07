@@ -90,7 +90,7 @@ export default function withAuth<T extends object>(
 			if (!user) {
 				const loadUser = async () => {
 					try {
-						const res = await api.get<User>("/user/me");
+						const res = await api.get<User>("/me");
 
 						if (!res.data) {
 							toast.error("Sesi login tidak valid");

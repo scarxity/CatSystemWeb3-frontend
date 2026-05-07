@@ -12,7 +12,7 @@ type Role = "breeder" | "cat-lover" | null;
 export default function LoginPage() {
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
 
-	const { ready, authenticated, getAccessToken } = usePrivy();
+	const { ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
 
 	// ── Privy login hooks ──
@@ -42,16 +42,28 @@ export default function LoginPage() {
 	});
 
 	// ── Re-authenticate with backend if Privy session already exists ──
-	// Avoids a redirect loop: if we just did router.replace("/") here, withAuth
-	// on "/" would redirect back to "/login" whenever the backend token is
-	// missing/expired, even though Privy still considers the user authenticated.
 	useEffect(() => {
 		if (!ready || !authenticated) return;
+
+		// Session was rejected by the backend — clear Privy so the user
+		// can go through the login flow again cleanly.
+		const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
+		if (sessionExpired === "true") {
+			logout();
+			return;
+		}
+
 		getAccessToken().then((token) => {
-			if (token) authLogin.mutate(token);
+			if (token) {
+				authLogin.mutate(token, {
+					onError: () => {
+						// Backend rejected the token — clear Privy session so the
+						// login buttons work instead of throwing "already logged in".
+						logout();
+					},
+				});
+			}
 		});
-		// getAccessToken and authLogin.mutate are stable refs; ready/authenticated
-		// are the only values that should trigger this effect.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ready, authenticated]);
 
