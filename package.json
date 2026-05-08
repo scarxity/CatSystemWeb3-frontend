@@ -19,11 +19,13 @@
 		"typecheck": "npx tsc --noEmit"
 	},
 	"dependencies": {
+		"@coral-xyz/anchor": "^0.32.1",
 		"@farcaster/mini-app-solana": "^2.0.0",
 		"@headlessui/react": "2.2.4",
 		"@privy-io/react-auth": "^3.23.1",
 		"@solana-program/memo": "^0.11.0",
 		"@solana/kit": "^6.9.0",
+		"@solana/web3.js": "^1.98.4",
 		"@tanstack/react-query": "5.81.5",
 		"@tanstack/react-table": "8.21.3",
 		"auto-zustand-selectors-hook": "3.0.1",

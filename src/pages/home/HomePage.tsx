@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import CatCard from "@/components/cat/CatCard";
+import { useCreateCat } from "@/hooks/useCreateCat";
 import type { Cat } from "@/types/cat";
 import type { CatFormData } from "@/types/catForm";
 import CatFormView from "./CatFormView";
@@ -24,17 +26,17 @@ type ViewMode =
 export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 	const [view, setView] = useState<ViewMode>({ type: "home" });
 	const catCount = cats.length;
+	const { createCat } = useCreateCat();
 
 	/* ── Add / Edit save handler ──────────────────────────────── */
-	const handleSave = (data: CatFormData, _imageFile: File | null) => {
-		// TODO: call API / blockchain to persist
-		console.log("Saving cat data:", data, _imageFile);
-		alert(
-			view.type === "edit"
-				? "Data kucing berhasil diperbarui!"
-				: "Data kucing baru berhasil disimpan!",
-		);
-		setView({ type: "home" });
+	const handleSave = async (data: CatFormData, _imageFile: File | null) => {
+		try {
+			await createCat({ name: data.name, gender: data.gender });
+			setView({ type: "home" });
+		} catch (err) {
+			toast.error("Gagal menyimpan kucing ke blockchain.");
+			console.error(err);
+		}
 	};
 
 	/* ── Render sub-views ─────────────────────────────────────── */

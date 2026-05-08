@@ -8,7 +8,13 @@
       "Read(//home/billy7/.local/share/pnpm/**)",
       "Read(//home/billy7/**)",
       "Bash(/home/billy7/.local/share/pnpm/pnpm remove *)",
-      "Bash(/home/billy7/.local/share/pnpm/pnpm install *)"
+      "Bash(/home/billy7/.local/share/pnpm/pnpm install *)",
+      "Bash(npm install *)",
+      "Bash(pnpm add *)",
+      "Read(//usr/bin/**)",
+      "Bash(/home/billy7/.local/share/pnpm/pnpm add *)",
+      "Bash(/home/billy7/.nvm/versions/node/v24.10.0/bin/npx tsc *)",
+      "Bash(find /home/billy7/Project/CatSystemWeb3-frontend/node_modules/.pnpm/@privy-io+react-auth*/node_modules/@privy-io/react-auth -name \"*.d.ts\")"
     ]
   }
 }
