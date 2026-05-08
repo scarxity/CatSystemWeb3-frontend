@@ -6,12 +6,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { useAuthLogin } from "@/hooks/useAuthLogin";
+import { getToken } from "@/lib/cookies";
 
 type Role = "breeder" | "cat-lover" | null;
 
 export default function LoginPage() {
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
-
 	const { ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
 
@@ -41,12 +41,23 @@ export default function LoginPage() {
 		},
 	});
 
-	// ── Re-authenticate with backend if Privy session already exists ──
+	// ── Redirect after successful login or if already logged in ──
+	useEffect(() => {
+		if (authLogin.isSuccess || getToken()) {
+			const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
+			if (sessionExpired !== "true") {
+				window.location.replace("/");
+			}
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [authLogin.isSuccess]);
+
+	// ── Re-authenticate with backend if Privy session exists but no backend token ──
 	useEffect(() => {
 		if (!ready || !authenticated) return;
+		// If there's already a backend token, the redirect above handles it.
+		if (getToken()) return;
 
-		// Session was rejected by the backend — clear Privy so the user
-		// can go through the login flow again cleanly.
 		const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 		if (sessionExpired === "true") {
 			logout();
