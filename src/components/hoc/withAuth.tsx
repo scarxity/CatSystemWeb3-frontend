@@ -115,7 +115,8 @@ export default function withAuth<T extends object>(
 		}, [isAuthenticated, login, logout, stopLoading, user]);
 
 		React.useEffect(() => {
-			if (isLoading && !user) {
+			const token = getToken();
+			if (!user && (isLoading || token)) {
 				checkAuth();
 			}
 
@@ -140,7 +141,7 @@ export default function withAuth<T extends object>(
 					} else if (!hasAccess(user.role as Role, routeRole)) {
 						router.replace(getDefaultRoute(user.role as Role));
 					}
-				} else if (routeRole !== "public") {
+				} else if (routeRole !== "public" && !getToken()) {
 					router.replace(LOGIN_ROUTE);
 				}
 			};
