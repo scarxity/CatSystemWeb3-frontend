@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm /home/billy7/Project/CatSystemWeb3-frontend/.husky/commit-msg)",
+      "Bash(rm /home/billy7/Project/CatSystemWeb3-frontend/commitlint.config.cjs)",
+      "Bash(pnpm remove *)",
+      "Bash(npm remove *)",
+      "Read(//home/billy7/.local/share/pnpm/**)",
+      "Read(//home/billy7/**)",
+      "Bash(/home/billy7/.local/share/pnpm/pnpm remove *)",
+      "Bash(/home/billy7/.local/share/pnpm/pnpm install *)"
+    ]
+  }
+}
