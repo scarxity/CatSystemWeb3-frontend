@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CatCard from "@/components/cat/CatCard";
 import type { Cat } from "@/types/cat";
@@ -18,11 +19,11 @@ interface HomePageProps {
 type ViewMode =
 	| { type: "home" }
 	| { type: "detail"; cat: Cat }
-	| { type: "add" }
 	| { type: "edit"; cat: Cat };
 
 export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 	const [view, setView] = useState<ViewMode>({ type: "home" });
+	const router = useRouter();
 	const catCount = cats.length;
 
 	/* ── Add / Edit save handler ──────────────────────────────── */
@@ -48,14 +49,7 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 		);
 	}
 
-	if (view.type === "add") {
-		return (
-			<CatFormView
-				onBack={() => setView({ type: "home" })}
-				onSave={handleSave}
-			/>
-		);
-	}
+	/* "add" mode now navigates to /cats/register — see button below */
 
 	if (view.type === "edit") {
 		return (
@@ -114,7 +108,7 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 						<h2 className="text-[18px] font-bold text-gray-900">My Cats</h2>
 						<button
 							type="button"
-							onClick={() => setView({ type: "add" })}
+							onClick={() => router.push("/cats/register")}
 							className="text-[15px] font-medium text-[#4359ea] hover:underline"
 						>
 							+ Add New Cat
