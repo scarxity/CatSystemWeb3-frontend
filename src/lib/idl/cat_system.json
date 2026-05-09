@@ -1,5 +1,5 @@
 {
-  "address": "2MrZJsTvuSQ3HUtDozeGAm96eSrU1jCaVKjSSiu57Tzz",
+  "address": "fVYVixXZZmeko6bVYeoGwAh51LVPCjz2pPeVpzGhz1r",
   "metadata": {
     "name": "cat_system",
     "version": "0.1.0",
@@ -20,6 +20,35 @@
       ],
       "accounts": [
         {
+          "name": "user_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
           "name": "cat",
           "writable": true,
           "pda": {
@@ -35,6 +64,11 @@
               {
                 "kind": "account",
                 "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "user_counter.cat_count",
+                "account": "UserCounter"
               }
             ]
           }
@@ -63,6 +97,42 @@
           }
         },
         {
+          "name": "breed",
+          "type": "string"
+        },
+        {
+          "name": "coat_color",
+          "type": "string"
+        },
+        {
+          "name": "coat_length",
+          "type": {
+            "defined": {
+              "name": "CoatLength"
+            }
+          }
+        },
+        {
+          "name": "eye_color",
+          "type": "string"
+        },
+        {
+          "name": "ear_type",
+          "type": {
+            "defined": {
+              "name": "EarType"
+            }
+          }
+        },
+        {
+          "name": "body_size",
+          "type": {
+            "defined": {
+              "name": "BodySize"
+            }
+          }
+        },
+        {
           "name": "description",
           "type": "string"
         }
@@ -82,6 +152,19 @@
         105,
         45
       ]
+    },
+    {
+      "name": "UserCounter",
+      "discriminator": [
+        154,
+        114,
+        103,
+        93,
+        77,
+        57,
+        80,
+        227
+      ]
     }
   ],
   "errors": [
@@ -97,11 +180,43 @@
     },
     {
       "code": 6002,
+      "name": "BreedTooLong",
+      "msg": "Breed must be 32 characters or less"
+    },
+    {
+      "code": 6003,
+      "name": "CoatColorTooLong",
+      "msg": "Coat color must be 32 characters or less"
+    },
+    {
+      "code": 6004,
+      "name": "EyeColorTooLong",
+      "msg": "Eye color must be 32 characters or less"
+    },
+    {
+      "code": 6005,
       "name": "NotOwner",
       "msg": "Not the cat owner"
     }
   ],
   "types": [
+    {
+      "name": "BodySize",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Small"
+          },
+          {
+            "name": "Medium"
+          },
+          {
+            "name": "Large"
+          }
+        ]
+      }
+    },
     {
       "name": "Cat",
       "type": {
@@ -128,8 +243,78 @@
             }
           },
           {
+            "name": "breed",
+            "type": "string"
+          },
+          {
+            "name": "coat_color",
+            "type": "string"
+          },
+          {
+            "name": "coat_length",
+            "type": {
+              "defined": {
+                "name": "CoatLength"
+              }
+            }
+          },
+          {
+            "name": "eye_color",
+            "type": "string"
+          },
+          {
+            "name": "ear_type",
+            "type": {
+              "defined": {
+                "name": "EarType"
+              }
+            }
+          },
+          {
+            "name": "body_size",
+            "type": {
+              "defined": {
+                "name": "BodySize"
+              }
+            }
+          },
+          {
             "name": "description",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CoatLength",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Short"
+          },
+          {
+            "name": "Medium"
+          },
+          {
+            "name": "Long"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EarType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pointed"
+          },
+          {
+            "name": "Rounded"
+          },
+          {
+            "name": "Folded"
           }
         ]
       }
@@ -144,6 +329,18 @@
           },
           {
             "name": "Female"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserCounter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cat_count",
+            "type": "u64"
           }
         ]
       }

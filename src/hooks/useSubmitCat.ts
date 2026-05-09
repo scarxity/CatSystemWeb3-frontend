@@ -6,19 +6,34 @@ import { useWallets } from "@privy-io/react-auth/solana";
 
 import { useRegisterCat } from "@/pages/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
-import type { RegisterCatFormData } from "@/types/registerCat";
+import type { BioProfileData } from "@/types/registerCat";
 
-function composeDescription(formData: RegisterCatFormData): string {
-	const { bioProfile } = formData;
+function toGender(val: string) {
+	return val === "Female" ? { female: {} } : { male: {} };
+}
+
+function toCoatLength(val: BioProfileData["coatLength"]) {
+	if (val === "Long Hair") return { long: {} };
+	if (val === "Medium Hair") return { medium: {} };
+	return { short: {} };
+}
+
+function toEarType(val: BioProfileData["earType"]) {
+	if (val === "Rounded") return { rounded: {} };
+	if (val === "Folded") return { folded: {} };
+	return { pointed: {} };
+}
+
+function toBodySize(val: BioProfileData["bodySize"]) {
+	if (val === "Medium") return { medium: {} };
+	if (val === "Large") return { large: {} };
+	return { small: {} };
+}
+
+function composeDescription(bio: BioProfileData): string {
 	return [
-		bioProfile.breed && `Breed: ${bioProfile.breed}`,
-		bioProfile.coatColor &&
-			`Coat: ${[bioProfile.coatColor, bioProfile.coatLength].filter(Boolean).join(" ")}`,
-		bioProfile.eyeColor && `Eyes: ${bioProfile.eyeColor}`,
-		bioProfile.bodySize && `Size: ${bioProfile.bodySize}`,
-		bioProfile.personalityTraits.length > 0 &&
-			`Traits: ${bioProfile.personalityTraits.join(", ")}`,
-		bioProfile.additionalNotes,
+		bio.personalityTraits.length > 0 && `Traits: ${bio.personalityTraits.join(", ")}`,
+		bio.additionalNotes,
 	]
 		.filter(Boolean)
 		.join(". ")
@@ -41,14 +56,20 @@ export function useSubmitCat() {
 		setIsSubmitting(true);
 		try {
 			const program = createCatProgram(wallet);
-
-			const name = formData.basicInfo.catName.slice(0, 32);
-			const gender =
-				formData.basicInfo.gender === "Female" ? { female: {} } : { male: {} };
-			const description = composeDescription(formData);
+			const { basicInfo, bioProfile } = formData;
 
 			await program.methods
-				.createCat(name, gender, description)
+				.createCat(
+					basicInfo.catName.slice(0, 32),
+					toGender(basicInfo.gender),
+					bioProfile.breed.slice(0, 32),
+					bioProfile.coatColor.slice(0, 32),
+					toCoatLength(bioProfile.coatLength),
+					bioProfile.eyeColor.slice(0, 32),
+					toEarType(bioProfile.earType),
+					toBodySize(bioProfile.bodySize),
+					composeDescription(bioProfile),
+				)
 				.accounts({ owner: wallet.address })
 				.rpc();
 
