@@ -51,3 +51,16 @@ export function createCatProgram(wallet: ConnectedStandardSolanaWallet) {
 	});
 	return new Program(idl as Idl, provider);
 }
+
+export function createReadOnlyCatProgram() {
+	const connection = new Connection(RPC_ENDPOINT, "confirmed");
+	const dummyWallet = {
+		publicKey: PublicKey.default,
+		signTransaction: async <T>(tx: T) => tx,
+		signAllTransactions: async <T>(txs: T[]) => txs,
+	};
+	const provider = new AnchorProvider(connection, dummyWallet as any, {
+		commitment: "confirmed",
+	});
+	return new Program(idl as Idl, provider);
+}

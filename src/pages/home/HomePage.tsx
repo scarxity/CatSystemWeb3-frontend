@@ -6,25 +6,23 @@ import { useState } from "react";
 import CatCard from "@/components/cat/CatCard";
 import type { Cat } from "@/types/cat";
 import type { CatFormData } from "@/types/catForm";
+import { useGetMyCats } from "@/hooks/useGetMyCats";
+import useAuthStore from "@/app/stores/useAuthStore";
 import CatFormView from "./CatFormView";
 import CatIdentityView from "./CatIdentityView";
-
-interface HomePageProps {
-	/** Cats belonging to the current user, fetched server-side */
-	cats: Cat[];
-	/** Display name of the current user */
-	ownerName?: string;
-}
 
 type ViewMode =
 	| { type: "home" }
 	| { type: "detail"; cat: Cat }
 	| { type: "edit"; cat: Cat };
 
-export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
+export default function HomePage() {
 	const [view, setView] = useState<ViewMode>({ type: "home" });
 	const router = useRouter();
+	const user = useAuthStore.useUser();
+	const { data: cats = [], isLoading: catsLoading } = useGetMyCats();
 	const catCount = cats.length;
+	const ownerName = user?.name ?? user?.username ?? "Cat Owner";
 
 	/* ── Add / Edit save handler ──────────────────────────────── */
 	const handleSave = (data: CatFormData, _imageFile: File | null) => {
@@ -116,7 +114,11 @@ export default function HomePage({ cats, ownerName = "Alex" }: HomePageProps) {
 					</div>
 
 					{/* Cat grid */}
-					{catCount === 0 ? (
+					{catsLoading ? (
+						<div className="flex items-center justify-center py-16">
+							<p className="text-[14px] text-gray-400">Loading cats...</p>
+						</div>
+					) : catCount === 0 ? (
 						<div className="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-dashed border-gray-200">
 							<Image
 								src="/assets/Simbol home abu.png"
