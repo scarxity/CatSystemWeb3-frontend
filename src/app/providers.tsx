@@ -34,12 +34,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 				config={{
 					solana: {
 						rpcs: {
-							"solana:testnet": {
+							"solana:devnet": {
 								rpc: createSolanaRpc(
-									"https://api.testnet.solana.com",
+									"https://api.devnet.solana.com",
 								) as any,
 								rpcSubscriptions: createSolanaRpcSubscriptions(
-									"wss://api.testnet.solana.com",
+									"wss://api.devnet.solana.com",
 								),
 							},
 						},
