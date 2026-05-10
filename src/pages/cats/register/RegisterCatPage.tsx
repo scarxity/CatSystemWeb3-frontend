@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, CheckCircle2, FastForward } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, FastForward, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { RegisterCatProvider, useRegisterCat } from "./context/RegisterCatContext";
+import { useSubmitCat } from "@/hooks/useSubmitCat";
 import { REGISTER_STEPS } from "@/types/registerCat";
 
 /* ── Step full-screen components (mobile / tablet) */
@@ -136,12 +137,13 @@ function DesktopStepper() {
 function DesktopNavButtons() {
 	const router = useRouter();
 	const { goNext, goBack, isFirstStep, isLastStep, currentStep } = useRegisterCat();
+	const { handleSubmit, isSubmitting } = useSubmitCat();
 	// Family Tree (step 5) is optional
 	const showSkip = currentStep === 5;
 
-	const handleNext = () => {
+	const handleNext = async () => {
 		if (isLastStep) {
-			router.push("/");
+			await handleSubmit();
 		} else {
 			goNext();
 		}
@@ -153,10 +155,10 @@ function DesktopNavButtons() {
 			<button
 				type="button"
 				onClick={goBack}
-				disabled={isFirstStep}
+				disabled={isFirstStep || isSubmitting}
 				className={[
 					"flex items-center gap-2 px-5 py-3 rounded-2xl border-2 text-sm font-bold transition-all active:scale-[0.98]",
-					isFirstStep
+					isFirstStep || isSubmitting
 						? "border-gray-100 text-gray-300 cursor-not-allowed"
 						: "border-gray-200 text-gray-700 hover:bg-gray-50",
 				].join(" ")}
@@ -170,7 +172,8 @@ function DesktopNavButtons() {
 					<button
 						type="button"
 						onClick={() => router.push("/")}
-						className="flex items-center gap-2 px-5 py-3 rounded-2xl border-2 border-orange-200 bg-orange-50 text-orange-600 text-sm font-bold hover:bg-orange-100 active:scale-[0.98] transition-all"
+						disabled={isSubmitting}
+						className="flex items-center gap-2 px-5 py-3 rounded-2xl border-2 border-orange-200 bg-orange-50 text-orange-600 text-sm font-bold hover:bg-orange-100 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						<FastForward size={14} /> Skip
 					</button>
@@ -180,10 +183,15 @@ function DesktopNavButtons() {
 				<button
 					type="button"
 					onClick={handleNext}
-					className="flex items-center justify-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] text-white text-sm font-bold shadow-lg shadow-[#4359ea]/30 active:scale-[0.98] transition-all min-w-[130px]"
+					disabled={isSubmitting}
+					className="flex items-center justify-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] text-white text-sm font-bold shadow-lg shadow-[#4359ea]/30 active:scale-[0.98] transition-all min-w-[130px] disabled:opacity-70 disabled:cursor-not-allowed"
 				>
 					{isLastStep ? (
-						<>Submit <CheckCircle2 size={16} /></>
+						isSubmitting ? (
+							<><Loader2 size={16} className="animate-spin" /> Submitting…</>
+						) : (
+							<>Submit <CheckCircle2 size={16} /></>
+						)
 					) : (
 						<>Next <ArrowRight size={16} /></>
 					)}

@@ -5,6 +5,7 @@ import StepHeader from "../components/StepHeader";
 import StepNavButtons from "../components/StepNavButtons";
 import StepProgressBar from "../components/StepProgressBar";
 import { useRouter } from "next/navigation";
+import { useSubmitCat } from "@/hooks/useSubmitCat";
 
 import { useState, useRef } from "react";
 import {
@@ -544,18 +545,13 @@ export default function FamilyTreeStep() {
 	const router = useRouter();
 	const {
 		currentStep,
-		goNext,
 		goBack,
 		isFirstStep,
 		isLastStep,
 	} = useRegisterCat();
+	const { handleSubmit, isSubmitting } = useSubmitCat();
 
 	const handleSkip = () => {
-		router.push("/");
-	};
-
-	const handleSubmit = () => {
-		// Mock submit
 		router.push("/");
 	};
 
@@ -578,6 +574,7 @@ export default function FamilyTreeStep() {
 				showSkip={true}
 				onSkip={handleSkip}
 				nextLabel="Submit"
+				isLoading={isSubmitting}
 			/>
 		</div>
 	);

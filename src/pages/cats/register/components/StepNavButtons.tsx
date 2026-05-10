@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, ChevronsRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronsRight, Check, Loader2 } from "lucide-react";
 
 interface StepNavButtonsProps {
 	/** Called when the user taps "Back" */
@@ -17,6 +17,8 @@ interface StepNavButtonsProps {
 	showSkip?: boolean;
 	/** Optional label override for next button */
 	nextLabel?: string;
+	/** Shows a spinner and disables buttons while true */
+	isLoading?: boolean;
 }
 
 export default function StepNavButtons({
@@ -27,6 +29,7 @@ export default function StepNavButtons({
 	isFirstStep = false,
 	showSkip = false,
 	nextLabel,
+	isLoading = false,
 }: StepNavButtonsProps) {
 	const label = nextLabel ?? (isLastStep ? "Submit" : "Next");
 
@@ -40,10 +43,10 @@ export default function StepNavButtons({
 				<button
 					type="button"
 					onClick={onBack}
-					disabled={isFirstStep}
+					disabled={isFirstStep || isLoading}
 					className={[
 						"flex items-center justify-center gap-2 rounded-2xl border-2 py-3 font-bold text-sm transition-all active:scale-[0.98]",
-						isFirstStep
+						isFirstStep || isLoading
 							? "border-gray-100 text-gray-300 cursor-not-allowed"
 							: "border-gray-200 text-gray-700 hover:bg-gray-50",
 					].join(" ")}
@@ -57,7 +60,8 @@ export default function StepNavButtons({
 					<button
 						type="button"
 						onClick={onSkip}
-						className="flex items-center justify-center gap-2 rounded-2xl border-2 border-orange-200 bg-orange-50 py-3 text-orange-600 font-bold text-sm hover:bg-orange-100 active:scale-[0.98] transition-all"
+						disabled={isLoading}
+						className="flex items-center justify-center gap-2 rounded-2xl border-2 border-orange-200 bg-orange-50 py-3 text-orange-600 font-bold text-sm hover:bg-orange-100 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						<ChevronsRight size={16} />
 						Skip
@@ -68,10 +72,14 @@ export default function StepNavButtons({
 				<button
 					type="button"
 					onClick={onNext}
-					className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] active:scale-[0.98] py-3 text-white font-bold text-sm shadow-lg shadow-[#4359ea]/30 transition-all"
+					disabled={isLoading}
+					className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] active:scale-[0.98] py-3 text-white font-bold text-sm shadow-lg shadow-[#4359ea]/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
 				>
-					{label}
-					{isLastStep ? <Check size={18} /> : <ArrowRight size={18} />}
+					{isLoading && isLastStep ? (
+						<><Loader2 size={18} className="animate-spin" /> Submitting…</>
+					) : (
+						<>{label}{isLastStep ? <Check size={18} /> : <ArrowRight size={18} />}</>
+					)}
 				</button>
 			</div>
 		</div>
