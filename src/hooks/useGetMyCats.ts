@@ -54,6 +54,7 @@ async function fetchMyCats(walletAddress: string): Promise<Cat[]> {
 				verificationStatus: "Verified" as const,
 			},
 			ageLabel: "Unknown",
+			registeredAt: "May 10, 2026",
 			tokenId: `#${String(i + 1).padStart(4, "0")}`,
 			verified: true,
 			identification: { hasPaw: false, hasDNA: false, hasAncestry: false },
