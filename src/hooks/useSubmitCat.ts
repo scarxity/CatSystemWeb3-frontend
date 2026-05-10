@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useWallets } from "@privy-io/react-auth/solana";
+import { PublicKey } from "@solana/web3.js";
+import { BN } from "@coral-xyz/anchor";
 
 import { useRegisterCat } from "@/pages/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
@@ -57,6 +59,29 @@ export function useSubmitCat() {
 		try {
 			const program = createCatProgram(wallet);
 			const { basicInfo, bioProfile } = formData;
+			const ownerPubkey = new PublicKey(wallet.address);
+
+			// Derive user_counter PDA
+			const [userCounterPda] = PublicKey.findProgramAddressSync(
+				[Buffer.from("user_counter"), ownerPubkey.toBuffer()],
+				program.programId,
+			);
+
+			// Fetch current cat_count — defaults to 0 if account not yet initialized
+			let catCount = new BN(0);
+			try {
+				// biome-ignore lint/suspicious/noExplicitAny: Anchor generic Idl type
+				const counter = await (program.account as any).userCounter.fetch(userCounterPda);
+				catCount = counter.catCount as BN;
+			} catch {
+				// account doesn't exist yet (first registration)
+			}
+
+			// Derive cat PDA using current cat_count as seed
+			const [catPda] = PublicKey.findProgramAddressSync(
+				[Buffer.from("cat"), ownerPubkey.toBuffer(), catCount.toArrayLike(Buffer, "le", 8)],
+				program.programId,
+			);
 
 			await program.methods
 				.createCat(
@@ -70,7 +95,7 @@ export function useSubmitCat() {
 					toBodySize(bioProfile.bodySize),
 					composeDescription(bioProfile),
 				)
-				.accounts({ owner: wallet.address })
+				.accounts({ owner: wallet.address, userCounter: userCounterPda, cat: catPda })
 				.rpc();
 
 			toast.success("Cat registered on-chain!");
