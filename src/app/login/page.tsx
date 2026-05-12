@@ -1,6 +1,7 @@
 "use client";
 
 import { useLogin, useLoginWithOAuth, usePrivy } from "@privy-io/react-auth";
+import { useCreateWallet } from "@privy-io/react-auth/solana";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -12,22 +13,63 @@ type Role = "breeder" | "cat-lover" | null;
 
 export default function LoginPage() {
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
-	const { ready, authenticated, getAccessToken, logout } = usePrivy();
+	const { user, ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
+	const [isSyncing, setIsSyncing] = useState(false);
 
+	const { createWallet } = useCreateWallet();
+
+	const { initOAuth, loading: oauthLoading } = useLoginWithOAuth();
 	// ── Privy login hooks ──
-	const { initOAuth, loading: oauthLoading } = useLoginWithOAuth({
-		onComplete: async () => {
-			// After Privy login, get the access token and send it to our backend
-			const token = await getAccessToken();
-			if (token) {
-				authLogin.mutate(token);
+	useEffect(() => {
+		const syncWithBackend = async () => {
+			// 1. Wait until Privy is ready and user is authenticated
+			if (!ready || !authenticated || !user || isSyncing) return;
+			
+			// 2. If we already have a backend token, don't do anything
+			if (getToken()) return;
+
+			// 3. Check for the Solana Wallet
+			const solanaWallet = user.linkedAccounts.find(
+				(acc: any) => acc.type === 'wallet' && acc.chainType === 'solana'
+			);
+
+			// 4. Provisioning Gate: If no Solana wallet, create it first
+			if (!solanaWallet) {
+				try {
+					setIsSyncing(true);
+					console.log("Provisioning Solana wallet...");
+					await createWallet();
+					// We STOP here. When the wallet is created, Privy updates the 'user' object.
+					// React will re-run this useEffect automatically because 'user' is a dependency.
+					return; 
+				} catch (err) {
+					console.error("Provisioning failed:", err);
+					return;
+				} finally {
+					setIsSyncing(false);
+				}
 			}
-		},
-		onError: (error) => {
-			console.error("[login] OAuth error:", error);
-		},
-	});
+
+			// 5. Backend Gate: Only hit the backend if the wallet is confirmed to exist
+			try {
+				setIsSyncing(true);
+				const token = await getAccessToken();
+				if (token) {
+					console.log("Wallet confirmed. Syncing with backend...");
+					await authLogin.mutateAsync(token);
+				}
+			} catch (err) {
+				console.error("Backend sync failed:", err);
+				// If the backend rejects, clear the session so they can try again
+				logout();
+			} finally {
+				setIsSyncing(false);
+			}
+		};
+
+		syncWithBackend();
+	}, [ready, authenticated, user]);
 
 	const { login: openWalletLogin } = useLogin({
 		onComplete: async () => {
@@ -52,29 +94,13 @@ export default function LoginPage() {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authLogin.isSuccess]);
 
-	// ── Re-authenticate with backend if Privy session exists but no backend token ──
+	// ── Handle "sessionExpired" query param ──
 	useEffect(() => {
 		if (!ready || !authenticated) return;
-		// If there's already a backend token, the redirect above handles it.
-		if (getToken()) return;
-
 		const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 		if (sessionExpired === "true") {
 			logout();
-			return;
 		}
-
-		getAccessToken().then((token) => {
-			if (token) {
-				authLogin.mutate(token, {
-					onError: () => {
-						// Backend rejected the token — clear Privy session so the
-						// login buttons work instead of throwing "already logged in".
-						logout();
-					},
-				});
-			}
-		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ready, authenticated]);
 
