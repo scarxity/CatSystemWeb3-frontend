@@ -9,9 +9,9 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const siteConfig = {
-	title: "Next Template",
+	title: "OLPaw - Pet Identity & DNA Verification Platform",
 	description:
-		"A Next.js 15 starter template with TypeScript, Tailwind CSS v4, and built-in tools for efficient development.",
+		"Secure your cat's identity, verify lineage, and unlock a healthier future with blockchain.",
 	url: process.env.SITE_URL || "https://example.com",
 };
 
