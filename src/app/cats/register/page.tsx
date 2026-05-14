@@ -2,7 +2,7 @@
 
 import withAuth from "@/components/hoc/withAuth";
 import Layout from "@/layouts/Layout";
-import RegisterCatPage from "@/pages/cats/register/RegisterCatPage";
+import RegisterCatPage from "@/views/cats/register/RegisterCatPage";
 
 /**
  * Route: /cats/register
@@ -21,11 +21,11 @@ import RegisterCatPage from "@/pages/cats/register/RegisterCatPage";
  * └─────────────────────────────────────────────────────────┘
  */
 function Page() {
-	return (
-		<Layout>
-			<RegisterCatPage />
-		</Layout>
-	);
+  return (
+    <Layout>
+      <RegisterCatPage />
+    </Layout>
+  );
 }
 
 export default withAuth(Page, "auth");
