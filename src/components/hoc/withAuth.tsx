@@ -140,6 +140,7 @@ export default function withAuth<T extends object>(
 						// Treat onboarded=undefined or false as "not yet onboarded"
 						const isOnboarded = user.onboarded === true;
 						if (!isOnboarded && pathName !== "/onboarding") {
+							console.log("masukk")
 							router.replace("/onboarding");
 							return;
 						}

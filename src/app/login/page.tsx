@@ -1,6 +1,6 @@
 "use client";
 
-import { useLogin, useLoginWithOAuth, usePrivy, getIdentityToken } from "@privy-io/react-auth";
+import { useLogin, useLoginWithOAuth, usePrivy } from "@privy-io/react-auth";
 import { useCreateWallet } from "@privy-io/react-auth/solana";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -13,8 +13,7 @@ type Role = "breeder" | "cat-lover" | null;
 
 export default function LoginPage() {
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
-	const { user, ready, authenticated, logout } = usePrivy();
-	// getIdentityToken is a standalone async function from @privy-io/react-auth
+	const { user, ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
 	const [isSyncing, setIsSyncing] = useState(false);
 
@@ -26,7 +25,7 @@ export default function LoginPage() {
 		const syncWithBackend = async () => {
 			// 1. Wait until Privy is ready and user is authenticated
 			if (!ready || !authenticated || !user || isSyncing) return;
-			
+
 			// 2. If we already have a backend token, don't do anything
 			if (getToken()) return;
 
@@ -43,7 +42,7 @@ export default function LoginPage() {
 					await createWallet();
 					// We STOP here. When the wallet is created, Privy updates the 'user' object.
 					// React will re-run this useEffect automatically because 'user' is a dependency.
-					return; 
+					return;
 				} catch (err) {
 					console.error("Provisioning failed:", err);
 					return;
@@ -52,18 +51,14 @@ export default function LoginPage() {
 				}
 			}
 
-			// 5. Backend Gate: Only hit the backend once the wallet is confirmed
+			// 5. Backend Gate: Only hit the backend if the wallet is confirmed to exist
 			try {
 				setIsSyncing(true);
-				console.log("Wallet confirmed. Fetching identity token...");
-				// Call getIdentityToken() imperatively — more reliable than the reactive value
-				const token = await getIdentityToken();
-				if (!token) {
-					console.warn("Identity token is null after fetch, aborting.");
-					return;
+				const token = await getAccessToken();
+				if (token) {
+					console.log("Wallet confirmed. Syncing with backend...");
+					await authLogin.mutateAsync(token);
 				}
-				console.log("Syncing with backend...");
-				await authLogin.mutateAsync(token);
 			} catch (err) {
 				console.error("Backend sync failed:", err);
 				// If the backend rejects, clear the session so they can try again
@@ -78,8 +73,10 @@ export default function LoginPage() {
 
 	const { login: openWalletLogin } = useLogin({
 		onComplete: async () => {
-			// Identity token will be available via useIdentityToken after login.
-			// The useEffect above will pick it up automatically.
+			const token = await getAccessToken();
+			if (token) {
+				authLogin.mutate(token);
+			}
 		},
 		onError: (error) => {
 			console.error("[login] Wallet login error:", error);
@@ -88,16 +85,14 @@ export default function LoginPage() {
 
 	// ── Redirect after successful login or if already logged in ──
 	useEffect(() => {
-		// Only redirect after Privy is ready to avoid premature redirects
-		if (!ready) return;
 		if (authLogin.isSuccess || getToken()) {
 			const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 			if (sessionExpired !== "true") {
 				window.location.replace("/");
 			}
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [authLogin.isSuccess, ready]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [authLogin.isSuccess]);
 
 	// ── Handle "sessionExpired" query param ──
 	useEffect(() => {
@@ -322,18 +317,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("breeder")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "breeder"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "breeder"
 									? "border-indigo-500 bg-indigo-50/60 shadow-md shadow-indigo-100"
 									: "border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "breeder"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "breeder"
 										? "bg-indigo-500 text-white"
 										: "bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
@@ -358,18 +351,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("cat-lover")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "cat-lover"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "cat-lover"
 									? "border-pink-400 bg-pink-50/60 shadow-md shadow-pink-100"
 									: "border-gray-200 bg-white hover:border-pink-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "cat-lover"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "cat-lover"
 										? "bg-pink-500 text-white"
 										: "bg-pink-50 text-pink-500 group-hover:bg-pink-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
