@@ -1,6 +1,6 @@
 "use client";
 
-import { useLogin, useLoginWithOAuth, usePrivy } from "@privy-io/react-auth";
+import { useLogin, useLoginWithOAuth, usePrivy, getIdentityToken } from "@privy-io/react-auth";
 import { useCreateWallet } from "@privy-io/react-auth/solana";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -13,7 +13,8 @@ type Role = "breeder" | "cat-lover" | null;
 
 export default function LoginPage() {
 	const [selectedRole, setSelectedRole] = useState<Role>(null);
-	const { user, ready, authenticated, getAccessToken, logout } = usePrivy();
+	const { user, ready, authenticated, logout } = usePrivy();
+	// getIdentityToken is a standalone async function from @privy-io/react-auth
 	const authLogin = useAuthLogin();
 	const [isSyncing, setIsSyncing] = useState(false);
 
@@ -51,14 +52,18 @@ export default function LoginPage() {
 				}
 			}
 
-			// 5. Backend Gate: Only hit the backend if the wallet is confirmed to exist
+			// 5. Backend Gate: Only hit the backend once the wallet is confirmed
 			try {
 				setIsSyncing(true);
-				const token = await getAccessToken();
-				if (token) {
-					console.log("Wallet confirmed. Syncing with backend...");
-					await authLogin.mutateAsync(token);
+				console.log("Wallet confirmed. Fetching identity token...");
+				// Call getIdentityToken() imperatively — more reliable than the reactive value
+				const token = await getIdentityToken();
+				if (!token) {
+					console.warn("Identity token is null after fetch, aborting.");
+					return;
 				}
+				console.log("Syncing with backend...");
+				await authLogin.mutateAsync(token);
 			} catch (err) {
 				console.error("Backend sync failed:", err);
 				// If the backend rejects, clear the session so they can try again
@@ -73,10 +78,8 @@ export default function LoginPage() {
 
 	const { login: openWalletLogin } = useLogin({
 		onComplete: async () => {
-			const token = await getAccessToken();
-			if (token) {
-				authLogin.mutate(token);
-			}
+			// Identity token will be available via useIdentityToken after login.
+			// The useEffect above will pick it up automatically.
 		},
 		onError: (error) => {
 			console.error("[login] Wallet login error:", error);
@@ -85,6 +88,8 @@ export default function LoginPage() {
 
 	// ── Redirect after successful login or if already logged in ──
 	useEffect(() => {
+		// Only redirect after Privy is ready to avoid premature redirects
+		if (!ready) return;
 		if (authLogin.isSuccess || getToken()) {
 			const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 			if (sessionExpired !== "true") {
@@ -92,7 +97,7 @@ export default function LoginPage() {
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [authLogin.isSuccess]);
+	}, [authLogin.isSuccess, ready]);
 
 	// ── Handle "sessionExpired" query param ──
 	useEffect(() => {

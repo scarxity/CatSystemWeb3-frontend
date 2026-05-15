@@ -5,6 +5,8 @@ export type User = {
 	username?: string;
 	email?: string;
 	role?: string;
+	onboarded?: boolean;
+	bio?: string;
 	created_at?: string;
 	updated_at?: string;
 };

@@ -45,4 +45,23 @@ export type AuthWeb3Response = {
 export type MeResponse = {
 	id: string;
 	wallet: string;
+	onboarded: boolean;
+	name?: string;
+	username?: string;
+	bio?: string;
+};
+
+// POST /users/onboard
+export type OnboardRequest = {
+	name: string;
+	username: string;
+	bio?: string;
+};
+
+export type OnboardResponse = {
+	wallet: string;
+	name: string;
+	username: string;
+	bio?: string;
+	onboarded: true;
 };
