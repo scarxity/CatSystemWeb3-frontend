@@ -22,7 +22,11 @@ export default function HomePage() {
 	const user = useAuthStore.useUser();
 	const { data: cats = [], isLoading: catsLoading } = useGetMyCats();
 	const catCount = cats.length;
-	const ownerName = user?.name ?? user?.username ?? "Cat Owner";
+	const ownerName =
+		(user?.user_data?.name as string) ??
+		user?.name ??
+		user?.username ??
+		"Cat Owner";
 
 	/* ── Add / Edit save handler ──────────────────────────────── */
 	const handleSave = (data: CatFormData, _imageFile: File | null) => {
