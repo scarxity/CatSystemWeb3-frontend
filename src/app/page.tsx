@@ -1,10 +1,10 @@
 import Layout from "@/layouts/Layout";
-import HomePage from "@/pages/home/ProtectedHomePage";
+import HomePage from "@/views/home/ProtectedHomePage";
 
 export default function Page() {
-	return (
-		<Layout withNavbar>
-			<HomePage />
-		</Layout>
-	);
+  return (
+    <Layout withNavbar>
+      <HomePage />
+    </Layout>
+  );
 }
