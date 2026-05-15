@@ -45,7 +45,7 @@ export type AuthWeb3Response = {
 export type MeResponse = {
 	id: string;
 	wallet: string;
-	onboarded: boolean;
+	user_data?: Record<string, unknown> | null;
 	name?: string;
 	username?: string;
 	bio?: string;

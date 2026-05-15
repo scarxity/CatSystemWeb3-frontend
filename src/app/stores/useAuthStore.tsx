@@ -12,6 +12,7 @@ type AuthStoreType = {
 	login: (user: User & WithToken) => void;
 	logout: () => void;
 	stopLoading: () => void;
+	updateUser: (patch: Partial<User>) => void;
 };
 
 const useAuthStoreBase = create<AuthStoreType>((set) => ({
@@ -40,6 +41,13 @@ const useAuthStoreBase = create<AuthStoreType>((set) => ({
 		set(
 			produce<AuthStoreType>((state) => {
 				state.isLoading = false;
+			}),
+		);
+	},
+	updateUser: (patch) => {
+		set(
+			produce<AuthStoreType>((state) => {
+				if (state.user) Object.assign(state.user, patch);
 			}),
 		);
 	},

@@ -137,8 +137,7 @@ export default function withAuth<T extends object>(
 
 					// Handle onboarding redirect for authenticated routes
 					if (routeRole !== "public") {
-						// Treat onboarded=undefined or false as "not yet onboarded"
-						const isOnboarded = user.onboarded === true;
+						const isOnboarded = !!user.user_data;
 						if (!isOnboarded && pathName !== "/onboarding") {
 							console.log("masukk")
 							router.replace("/onboarding");
@@ -187,17 +186,17 @@ export default function withAuth<T extends object>(
 			(isAuthenticated &&
 				user &&
 				routeRole !== "public" &&
-				user.onboarded !== true &&
+				!user.user_data &&
 				pathName !== "/onboarding") ||
 			(isAuthenticated &&
 				user &&
 				routeRole !== "public" &&
-				user.onboarded === true &&
+				!!user.user_data &&
 				pathName === "/onboarding") ||
 			(isAuthenticated &&
 				user &&
 				routeRole !== "public" &&
-				user.onboarded === true &&
+				!!user.user_data &&
 				!hasAccess(user.role as Role, routeRole))
 		) {
 			return <Loading />;
@@ -211,11 +210,11 @@ export default function withAuth<T extends object>(
 			routeRole === "public" ||
 			(isAuthenticated &&
 				user &&
-				user.onboarded !== true &&
+				!user.user_data &&
 				pathName === "/onboarding") ||
 			(isAuthenticated &&
 				user &&
-				user.onboarded === true &&
+				!!user.user_data &&
 				hasAccess(user.role as Role, routeRole))
 		) {
 			return <Component {...(props as T)} />;

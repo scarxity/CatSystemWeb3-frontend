@@ -5,7 +5,7 @@ export type User = {
 	username?: string;
 	email?: string;
 	role?: string;
-	onboarded?: boolean;
+	user_data?: Record<string, unknown> | null;
 	bio?: string;
 	created_at?: string;
 	updated_at?: string;

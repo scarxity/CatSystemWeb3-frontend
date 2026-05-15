@@ -37,7 +37,7 @@ export default function OnboardingPage() {
 		onboard.mutate(data, {
 			onSuccess: () => {
 				toast.success("Profile setup complete!");
-				router.push("/");
+				window.location.replace("/");
 			},
 			onError: (error: AxiosError<ApiError>) => {
 				if (error.response?.status === 409) {
