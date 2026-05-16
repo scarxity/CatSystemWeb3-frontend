@@ -42,6 +42,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 									"wss://api.devnet.solana.com",
 								),
 							},
+							"solana:mainnet": {
+								rpc: createSolanaRpc(
+									"https://api.devnet.solana.com",
+								) as any,
+								rpcSubscriptions: createSolanaRpcSubscriptions(
+									"wss://api.devnet.solana.com",
+								),
+							},
 						},
 					},
 					appearance: {
