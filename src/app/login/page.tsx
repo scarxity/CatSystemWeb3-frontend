@@ -25,7 +25,7 @@ export default function LoginPage() {
 		const syncWithBackend = async () => {
 			// 1. Wait until Privy is ready and user is authenticated
 			if (!ready || !authenticated || !user || isSyncing) return;
-			
+
 			// 2. If we already have a backend token, don't do anything
 			if (getToken()) return;
 
@@ -42,7 +42,7 @@ export default function LoginPage() {
 					await createWallet();
 					// We STOP here. When the wallet is created, Privy updates the 'user' object.
 					// React will re-run this useEffect automatically because 'user' is a dependency.
-					return; 
+					return;
 				} catch (err) {
 					console.error("Provisioning failed:", err);
 					return;
@@ -91,7 +91,7 @@ export default function LoginPage() {
 				window.location.replace("/");
 			}
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [authLogin.isSuccess]);
 
 	// ── Handle "sessionExpired" query param ──
@@ -317,18 +317,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("breeder")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "breeder"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "breeder"
 									? "border-indigo-500 bg-indigo-50/60 shadow-md shadow-indigo-100"
 									: "border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "breeder"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "breeder"
 										? "bg-indigo-500 text-white"
 										: "bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
@@ -353,18 +351,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("cat-lover")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "cat-lover"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "cat-lover"
 									? "border-pink-400 bg-pink-50/60 shadow-md shadow-pink-100"
 									: "border-gray-200 bg-white hover:border-pink-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "cat-lover"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "cat-lover"
 										? "bg-pink-500 text-white"
 										: "bg-pink-50 text-pink-500 group-hover:bg-pink-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
