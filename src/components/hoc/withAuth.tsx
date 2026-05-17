@@ -135,6 +135,20 @@ export default function withAuth<T extends object>(
 						return;
 					}
 
+					// Handle onboarding redirect for authenticated routes
+					if (routeRole !== "public") {
+						const isOnboarded = !!user.user_data;
+						if (!isOnboarded && pathName !== "/onboarding") {
+							console.log("masukk")
+							router.replace("/onboarding");
+							return;
+						}
+						if (isOnboarded && pathName === "/onboarding") {
+							router.replace("/");
+							return;
+						}
+					}
+
 					// Handle role-based access
 					if (routeRole === "public") {
 						router.replace(getDefaultRoute(user.role as Role));
@@ -163,6 +177,8 @@ export default function withAuth<T extends object>(
 		// 2. Not authenticated and trying to access protected route
 		// 3. Authenticated but user data not yet loaded
 		// 4. Authenticated but doesn't have access to the route
+		// 5. Authenticated but not onboarded and not on /onboarding (redirect pending)
+		// 6. Authenticated and onboarded but on /onboarding (redirect pending)
 		if (
 			isLoading ||
 			(!isAuthenticated && routeRole !== "public") ||
@@ -170,6 +186,17 @@ export default function withAuth<T extends object>(
 			(isAuthenticated &&
 				user &&
 				routeRole !== "public" &&
+				!user.user_data &&
+				pathName !== "/onboarding") ||
+			(isAuthenticated &&
+				user &&
+				routeRole !== "public" &&
+				!!user.user_data &&
+				pathName === "/onboarding") ||
+			(isAuthenticated &&
+				user &&
+				routeRole !== "public" &&
+				!!user.user_data &&
 				!hasAccess(user.role as Role, routeRole))
 		) {
 			return <Loading />;
@@ -177,10 +204,18 @@ export default function withAuth<T extends object>(
 
 		// Only render the component if:
 		// 1. It's a public route
-		// 2. User is authenticated and has access
+		// 2. User is authenticated, not yet onboarded, and on /onboarding
+		// 3. User is authenticated, onboarded, and has access
 		if (
 			routeRole === "public" ||
-			(isAuthenticated && user && hasAccess(user.role as Role, routeRole))
+			(isAuthenticated &&
+				user &&
+				!user.user_data &&
+				pathName === "/onboarding") ||
+			(isAuthenticated &&
+				user &&
+				!!user.user_data &&
+				hasAccess(user.role as Role, routeRole))
 		) {
 			return <Component {...(props as T)} />;
 		}
