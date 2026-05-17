@@ -54,14 +54,12 @@ export type MeResponse = {
 // POST /users/onboard
 export type OnboardRequest = {
 	name: string;
-	username: string;
 	bio?: string;
 };
 
 export type OnboardResponse = {
 	wallet: string;
 	name: string;
-	username: string;
 	bio?: string;
 	onboarded: true;
 };

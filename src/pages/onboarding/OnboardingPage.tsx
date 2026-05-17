@@ -1,34 +1,28 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { User, AtSign, FileText, Loader2 } from "lucide-react";
+import { User, FileText, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import type { AxiosError } from "axios";
+
 
 import { useOnboard } from "@/hooks/useOnboard";
-import type { ApiError } from "@/types/api";
 
 type OnboardingFormData = {
 	name: string;
-	username: string;
 	bio?: string;
 };
 
 export default function OnboardingPage() {
-	const router = useRouter();
 	const onboard = useOnboard();
 
 	const {
 		register,
 		handleSubmit,
-		setError,
 		formState: { errors },
 	} = useForm<OnboardingFormData>({
 		defaultValues: {
 			name: "",
-			username: "",
 			bio: "",
 		},
 	});
@@ -39,12 +33,8 @@ export default function OnboardingPage() {
 				toast.success("Profile setup complete!");
 				window.location.replace("/");
 			},
-			onError: (error: AxiosError<ApiError>) => {
-				if (error.response?.status === 409) {
-					setError("username", { message: "Username already taken" });
-				} else {
-					toast.error("Something went wrong. Please try again.");
-				}
+			onError: () => {
+				toast.error("Something went wrong. Please try again.");
 			},
 		});
 	};
@@ -76,7 +66,7 @@ export default function OnboardingPage() {
 						Complete Your Profile
 					</h1>
 					<p className="text-sm text-gray-500 text-center mb-8">
-						Set up your name, username, and bio to get started.
+						Set up your name and bio to get started.
 					</p>
 
 					{/* Form */}
@@ -87,7 +77,7 @@ export default function OnboardingPage() {
 								htmlFor="name"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								Display Name
+								Name
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -96,7 +86,7 @@ export default function OnboardingPage() {
 								<input
 									id="name"
 									type="text"
-									placeholder="Enter your display name"
+									placeholder="Enter your name"
 									className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${
 										errors.name
 											? "border-red-300 focus:ring-red-500 focus:border-red-500"
@@ -116,40 +106,6 @@ export default function OnboardingPage() {
 							)}
 						</div>
 
-						{/* Username Field */}
-						<div>
-							<label
-								htmlFor="username"
-								className="block text-sm font-medium text-gray-700 mb-1.5"
-							>
-								Username
-							</label>
-							<div className="relative">
-								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-									<AtSign className="w-4 h-4 text-gray-400" />
-								</div>
-								<input
-									id="username"
-									type="text"
-									placeholder="Choose a unique username"
-									className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${
-										errors.username
-											? "border-red-300 focus:ring-red-500 focus:border-red-500"
-											: "border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
-									} text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2`}
-									{...register("username", {
-										required: "Username is required",
-										validate: (v) =>
-											v.trim() !== "" || "Username is required",
-									})}
-								/>
-							</div>
-							{errors.username && (
-								<p className="mt-1.5 text-xs text-red-500">
-									{errors.username.message}
-								</p>
-							)}
-						</div>
 
 						{/* Bio Field */}
 						<div>
