@@ -2,10 +2,6 @@
 User-agent: *
 Allow: /
 
-# *
-User-agent: *
-Disallow: /sandbox
-
 # Host
 Host: 'http://localhost:3000/' # Site URL
 
