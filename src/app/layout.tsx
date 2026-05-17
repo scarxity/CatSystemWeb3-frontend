@@ -1,8 +1,7 @@
 import "./globals.css";
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Head from "next/head";
+import type { Metadata } from 'next'
 import Providers from "@/app/providers";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 
@@ -41,9 +40,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<Head>
-				<meta name="apple-mobile-web-app-title" content={siteConfig.title} />
-			</Head>
+			<meta name="apple-mobile-web-app-title" content={siteConfig.title} />
 			{process.env.NEXT_PUBLIC_RUN_MODE === "production" && <GoogleAnalytics />}
 			<body className={`${inter.className}`}>
 				<Providers>{children}</Providers>

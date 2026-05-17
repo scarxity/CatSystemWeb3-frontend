@@ -1,5 +1,5 @@
 {
-  "address": "fVYVixXZZmeko6bVYeoGwAh51LVPCjz2pPeVpzGhz1r",
+  "address": "6hAoHrSuAg3eA55igUeXYS8ckVTih6RheK2E2N9Zvca",
   "metadata": {
     "name": "cat_system",
     "version": "0.1.0",
@@ -135,6 +135,14 @@
         {
           "name": "description",
           "type": "string"
+        },
+        {
+          "name": "image_url_1",
+          "type": "string"
+        },
+        {
+          "name": "image_url_2",
+          "type": "string"
         }
       ]
     }
@@ -167,6 +175,21 @@
       ]
     }
   ],
+  "events": [
+    {
+      "name": "CatCreated",
+      "discriminator": [
+        141,
+        80,
+        117,
+        85,
+        112,
+        26,
+        255,
+        89
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -195,6 +218,11 @@
     },
     {
       "code": 6005,
+      "name": "ImageUrlTooLong",
+      "msg": "Image URL must be 256 characters or less"
+    },
+    {
+      "code": 6006,
       "name": "NotOwner",
       "msg": "Not the cat owner"
     }
@@ -281,6 +309,98 @@
           {
             "name": "description",
             "type": "string"
+          },
+          {
+            "name": "image_url_1",
+            "type": "string"
+          },
+          {
+            "name": "image_url_2",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CatCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cat",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "cat_index",
+            "type": "u64"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "type": {
+              "defined": {
+                "name": "Gender"
+              }
+            }
+          },
+          {
+            "name": "breed",
+            "type": "string"
+          },
+          {
+            "name": "coat_color",
+            "type": "string"
+          },
+          {
+            "name": "coat_length",
+            "type": {
+              "defined": {
+                "name": "CoatLength"
+              }
+            }
+          },
+          {
+            "name": "eye_color",
+            "type": "string"
+          },
+          {
+            "name": "ear_type",
+            "type": {
+              "defined": {
+                "name": "EarType"
+              }
+            }
+          },
+          {
+            "name": "body_size",
+            "type": {
+              "defined": {
+                "name": "BodySize"
+              }
+            }
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "image_url_1",
+            "type": "string"
+          },
+          {
+            "name": "image_url_2",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }
