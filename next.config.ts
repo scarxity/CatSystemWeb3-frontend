@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
 				port: "8000",
 				pathname: "/uploads/**",
 			},
+			{
+				protocol:"https",
+				hostname:"catsystemweb3-backend-staging.up.railway.app",
+				pathname: "/uploads/**",
+			}
 		],
 	},
 };
