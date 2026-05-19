@@ -5,16 +5,22 @@ import { useWallets } from "@privy-io/react-auth/solana";
 import { createReadOnlyCatProgram } from "@/lib/solana/catSystem";
 import type { Cat } from "@/types/cat";
 
-const IMAGE_URLS = [
-	"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=200&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=200&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?q=80&w=200&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?q=80&w=200&auto=format&fit=crop",
-	"https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=200&auto=format&fit=crop",
-];
+const FALLBACK_IMAGE =
+	"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=200&auto=format&fit=crop";
 
 const ACCENT_COLORS = ["#7C5CFC", "#3B82F6", "#F59E0B", "#10B981", "#EC4899"];
 const CARD_BGS = ["#F0EDFF", "#EDF6FF", "#FEF3C7", "#D1FAE5", "#FCE7F3"];
+
+const API_BASE =
+	process.env.NEXT_PUBLIC_RUN_MODE === "development"
+		? process.env.NEXT_PUBLIC_API_URL_DEV
+		: process.env.NEXT_PUBLIC_API_URL_PROD;
+
+function resolveImageUrl(url: string | undefined | null): string {
+	if (!url) return FALLBACK_IMAGE;
+	if (url.startsWith("http")) return url;
+	return `${API_BASE ?? ""}${url}`;
+}
 
 function fromGender(val: Record<string, unknown>): "Male" | "Female" {
 	return "female" in val ? "Female" : "Male";
@@ -60,7 +66,7 @@ async function fetchMyCats(walletAddress: string): Promise<Cat[]> {
 			identification: { hasPaw: false, hasDNA: false, hasAncestry: false },
 			accentColor: ACCENT_COLORS[i % ACCENT_COLORS.length],
 			cardBg: CARD_BGS[i % CARD_BGS.length],
-			imageUrl: IMAGE_URLS[i % IMAGE_URLS.length],
+			imageUrl: resolveImageUrl(d.imageUrl1 as string | undefined),
 		};
 	});
 }

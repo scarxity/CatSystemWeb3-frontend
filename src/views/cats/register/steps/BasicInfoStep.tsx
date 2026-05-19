@@ -30,42 +30,116 @@ function calcAge(dob: string): string | null {
 /* ================================================================
    FIELDS ONLY — used by the desktop layout panel
    ================================================================ */
-export function BasicInfoFields() {
-	const { formData, updateBasicInfo } = useRegisterCat();
-	const { catName, dateOfBirth, gender, photoPreview } = formData.basicInfo;
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const dobInputRef = useRef<HTMLInputElement>(null);
-	const age = useMemo(() => calcAge(dateOfBirth), [dateOfBirth]);
+type PhotoSlot = "photo" | "photo2";
 
-	const handleFileChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const file = e.target.files?.[0];
-			if (!file) return;
+function PhotoSlotInput({
+	label,
+	slot,
+	preview,
+}: {
+	label: string;
+	slot: PhotoSlot;
+	preview: string | null;
+}) {
+	const { updateBasicInfo } = useRegisterCat();
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const fileField = slot;
+	const previewField = (slot === "photo" ? "photoPreview" : "photo2Preview") as "photoPreview" | "photo2Preview";
+
+	const setFile = useCallback(
+		(file: File) => {
 			const reader = new FileReader();
 			reader.onloadend = () =>
-				updateBasicInfo({ photo: file, photoPreview: reader.result as string });
+				updateBasicInfo({
+					[fileField]: file,
+					[previewField]: reader.result as string,
+				});
 			reader.readAsDataURL(file);
 		},
-		[updateBasicInfo],
+		[fileField, previewField, updateBasicInfo],
 	);
 
-	const removePhoto = useCallback(() => {
-		updateBasicInfo({ photo: null, photoPreview: null });
-		if (fileInputRef.current) fileInputRef.current.value = "";
-	}, [updateBasicInfo]);
+	const onChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const file = e.target.files?.[0];
+			if (file) setFile(file);
+		},
+		[setFile],
+	);
 
-	const handleDrop = useCallback(
+	const onDrop = useCallback(
 		(e: React.DragEvent<HTMLDivElement>) => {
 			e.preventDefault();
 			const file = e.dataTransfer.files?.[0];
-			if (!file || !file.type.startsWith("image/")) return;
-			const reader = new FileReader();
-			reader.onloadend = () =>
-				updateBasicInfo({ photo: file, photoPreview: reader.result as string });
-			reader.readAsDataURL(file);
+			if (file && file.type.startsWith("image/")) setFile(file);
 		},
-		[updateBasicInfo],
+		[setFile],
 	);
+
+	const remove = useCallback(() => {
+		updateBasicInfo({ [fileField]: null, [previewField]: null });
+		if (inputRef.current) inputRef.current.value = "";
+	}, [fileField, previewField, updateBasicInfo]);
+
+	return (
+		<div>
+			<p className="text-xs font-semibold text-gray-700 mb-1.5">{label}</p>
+			<div className="grid grid-cols-2 gap-2">
+				<div
+					role="button"
+					tabIndex={0}
+					aria-label={`Upload ${label}`}
+					onClick={() => inputRef.current?.click()}
+					onKeyDown={(e) => {
+						if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+					}}
+					onDragOver={(e) => e.preventDefault()}
+					onDrop={onDrop}
+					className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-[#4359ea]/40 rounded-2xl p-3 cursor-pointer hover:border-[#4359ea] hover:bg-[#4359ea]/5 transition-all min-h-[120px]"
+				>
+					<CloudUpload size={28} className="text-[#4359ea]" />
+					<p className="text-[11px] font-medium text-gray-600 text-center leading-tight">
+						Drag &amp; drop
+					</p>
+					<p className="text-[10px] text-[#4359ea] font-semibold">or browse</p>
+					<p className="text-[9px] text-gray-400">JPG, PNG ≤5MB</p>
+				</div>
+				{preview ? (
+					<div className="relative rounded-2xl overflow-hidden min-h-[120px] bg-gray-100">
+						<Image src={preview} alt={`${label} preview`} fill className="object-cover" />
+						<button
+							type="button"
+							onClick={remove}
+							aria-label={`Remove ${label}`}
+							className="absolute top-1.5 right-1.5 bg-white rounded-full p-1 shadow-md hover:bg-red-50 transition-colors"
+						>
+							<Trash2 size={13} className="text-red-500" />
+						</button>
+					</div>
+				) : (
+					<div className="flex items-center justify-center rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 min-h-[120px] text-gray-300 text-[10px] select-none">
+						Preview
+					</div>
+				)}
+			</div>
+			<input
+				ref={inputRef}
+				type="file"
+				accept="image/jpeg,image/png,image/webp"
+				className="hidden"
+				onChange={onChange}
+			/>
+		</div>
+	);
+}
+
+export function BasicInfoFields() {
+	const { formData, updateBasicInfo } = useRegisterCat();
+	const { catName, dateOfBirth, gender, photoPreview, photo2Preview } =
+		formData.basicInfo;
+	const dobInputRef = useRef<HTMLInputElement>(null);
+	const age = useMemo(() => calcAge(dateOfBirth), [dateOfBirth]);
 
 	return (
 		<>
@@ -181,58 +255,16 @@ export function BasicInfoFields() {
 					</div>
 				</div>
 
-				{/* Photo Upload */}
-				<div>
-					<p className="text-sm font-bold text-gray-900 mb-2">
-						Photo <span className="text-red-500">*</span>
+				{/* Photo Uploads — exactly 2 required */}
+				<div className="space-y-3">
+					<p className="text-sm font-bold text-gray-900">
+						Photos <span className="text-red-500">*</span>
+						<span className="ml-2 text-xs font-normal text-gray-500">
+							(2 required)
+						</span>
 					</p>
-					<div className="grid grid-cols-2 gap-2">
-						{/* Drop zone */}
-						<div
-							role="button"
-							tabIndex={0}
-							aria-label="Upload cat photo"
-							onClick={() => fileInputRef.current?.click()}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
-							}}
-							onDragOver={(e) => e.preventDefault()}
-							onDrop={handleDrop}
-							className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-[#4359ea]/40 rounded-2xl p-3 cursor-pointer hover:border-[#4359ea] hover:bg-[#4359ea]/5 transition-all min-h-[120px]"
-						>
-							<CloudUpload size={28} className="text-[#4359ea]" />
-							<p className="text-[11px] font-medium text-gray-600 text-center leading-tight">
-								Drag &amp; drop
-							</p>
-							<p className="text-[10px] text-[#4359ea] font-semibold">or browse</p>
-							<p className="text-[9px] text-gray-400">JPG, PNG ≤5MB</p>
-						</div>
-						{/* Preview */}
-						{photoPreview ? (
-							<div className="relative rounded-2xl overflow-hidden min-h-[120px] bg-gray-100">
-								<Image src={photoPreview} alt="Cat preview" fill className="object-cover" />
-								<button
-									type="button"
-									onClick={removePhoto}
-									aria-label="Remove photo"
-									className="absolute top-1.5 right-1.5 bg-white rounded-full p-1 shadow-md hover:bg-red-50 transition-colors"
-								>
-									<Trash2 size={13} className="text-red-500" />
-								</button>
-							</div>
-						) : (
-							<div className="flex items-center justify-center rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 min-h-[120px] text-gray-300 text-[10px] select-none">
-								Preview
-							</div>
-						)}
-					</div>
-					<input
-						ref={fileInputRef}
-						type="file"
-						accept="image/jpeg,image/png,image/webp"
-						className="hidden"
-						onChange={handleFileChange}
-					/>
+					<PhotoSlotInput label="Front photo" slot="photo" preview={photoPreview} />
+					<PhotoSlotInput label="Side photo" slot="photo2" preview={photo2Preview} />
 				</div>
 			</div>
 		</>

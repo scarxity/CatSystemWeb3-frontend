@@ -9,6 +9,8 @@ export interface BasicInfoData {
 	gender: CatGender;
 	photo: File | null;
 	photoPreview: string | null;
+	photo2: File | null;
+	photo2Preview: string | null;
 }
 
 /* ================================================================
@@ -169,6 +171,8 @@ export const EMPTY_BASIC_INFO: BasicInfoData = {
 	gender: "Male",
 	photo: null,
 	photoPreview: null,
+	photo2: null,
+	photo2Preview: null,
 };
 
 export const EMPTY_BIO_PROFILE: BioProfileData = {

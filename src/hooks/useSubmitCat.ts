@@ -8,6 +8,7 @@ import { BN } from "@coral-xyz/anchor";
 
 import { useRegisterCat } from "@/views/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
+import api from "@/lib/api";
 import type { BioProfileData } from "@/types/registerCat";
 
 function toGender(val: string) {
@@ -43,6 +44,18 @@ function composeDescription(bio: BioProfileData): string {
     .slice(0, 512);
 }
 
+async function uploadCatImages(photo1: File, photo2: File) {
+  const fd = new FormData();
+  fd.append("images", photo1);
+  fd.append("images", photo2);
+  const { data } = await api.post<{ image_url_1: string; image_url_2: string }>(
+    "/upload/cat-images",
+    fd,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
+  return data;
+}
+
 export function useSubmitCat() {
   const router = useRouter();
   const { wallets } = useWallets();
@@ -56,19 +69,38 @@ export function useSubmitCat() {
       return;
     }
 
+    const { basicInfo, bioProfile } = formData;
+    if (!basicInfo.photo || !basicInfo.photo2) {
+      toast.error("Please upload both cat photos before submitting.");
+      return;
+    }
+
     setIsSubmitting(true);
+
+    // Step 1: upload images. If this fails, no on-chain tx fires.
+    let imageUrl1: string;
+    let imageUrl2: string;
+    try {
+      const uploaded = await uploadCatImages(basicInfo.photo, basicInfo.photo2);
+      imageUrl1 = uploaded.image_url_1;
+      imageUrl2 = uploaded.image_url_2;
+    } catch (err) {
+      console.error("[register] image upload failed:", err);
+      toast.error("Image upload failed. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Step 2: on-chain create_cat with the URLs as args
     try {
       const program = createCatProgram(wallet);
-      const { basicInfo, bioProfile } = formData;
       const ownerPubkey = new PublicKey(wallet.address);
 
-      // Derive user_counter PDA
       const [userCounterPda] = PublicKey.findProgramAddressSync(
         [Buffer.from("user_counter"), ownerPubkey.toBuffer()],
         program.programId,
       );
 
-      // Fetch current cat_count — defaults to 0 if account not yet initialized
       let catCount = new BN(0);
       try {
         // biome-ignore lint/suspicious/noExplicitAny: Anchor generic Idl type
@@ -80,7 +112,6 @@ export function useSubmitCat() {
         // account doesn't exist yet (first registration)
       }
 
-      // Derive cat PDA using current cat_count as seed
       const [catPda] = PublicKey.findProgramAddressSync(
         [
           Buffer.from("cat"),
@@ -101,6 +132,8 @@ export function useSubmitCat() {
           toEarType(bioProfile.earType),
           toBodySize(bioProfile.bodySize),
           composeDescription(bioProfile),
+          imageUrl1,
+          imageUrl2,
         )
         .accounts({
           owner: wallet.address,
@@ -112,7 +145,10 @@ export function useSubmitCat() {
       toast.success("Cat registered on-chain!");
       router.push("/");
     } catch (err) {
-      console.error(err);
+      console.error(
+        `[register] on-chain tx failed. Orphan uploads: ${imageUrl1}, ${imageUrl2}`,
+        err,
+      );
       toast.error("Registration failed. Please try again.");
     } finally {
       setIsSubmitting(false);
