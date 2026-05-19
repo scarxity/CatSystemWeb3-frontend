@@ -45,7 +45,7 @@ function PhotoSlotInput({
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const fileField = slot;
-	const previewField = (slot === "photo" ? "photoPreview" : "photo2Preview") as const;
+	const previewField = (slot === "photo" ? "photoPreview" : "photo2Preview") as "photoPreview" | "photo2Preview";
 
 	const setFile = useCallback(
 		(file: File) => {
