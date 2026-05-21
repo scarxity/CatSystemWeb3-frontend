@@ -449,7 +449,7 @@ export default function LoginPage() {
 						) : (
 							<>
 								{/* Wallet icon */}
-								<div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg flex items-center justify-center shadow-sm">
+								<div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-teal-400 rounded-lg flex items-center justify-center shadow-sm">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="white">
 										<title>Wallet</title>
 										<path d="M21 18V19C21 20.1 20.1 21 19 21H5C3.89 21 3 20.1 3 19V5C3 3.9 3.89 3 5 3H19C20.1 3 21 3.9 21 5V6H12C10.89 6 10 6.9 10 8V16C10 17.1 10.89 18 12 18H21ZM12 16H22V8H12V16ZM16 13.5C15.17 13.5 14.5 12.83 14.5 12C14.5 11.17 15.17 10.5 16 10.5C16.83 10.5 17.5 11.17 17.5 12C17.5 12.83 16.83 13.5 16 13.5Z" />
@@ -457,8 +457,13 @@ export default function LoginPage() {
 								</div>
 								<div className="text-left">
 									<span className="text-sm font-semibold">Connect Wallet</span>
-									<span className="block text-[10px] text-gray-400 font-normal -mt-0.5">
-										🦊 MetaMask / Web3
+									<span className="flex items-center gap-1 text-[10px] text-gray-400 font-normal -mt-0.5">
+										<svg width="10" height="10" viewBox="0 0 395 342" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path d="M64.6 238.9L16.4 286.9C8.3 295 14.1 308.8 25.5 308.8H379.2C384.8 308.8 389.3 304.3 389.3 298.7V297.8C389.3 295.1 388.2 292.6 386.4 290.7L338.2 242.7C330.1 234.6 324.3 220.8 312.9 220.8H25.5C19.9 220.8 15.4 225.3 15.4 230.9V231.8C15.4 234.5 16.5 237 18.3 238.9H64.6Z" fill="#14F195"/>
+											<path d="M64.6 102.1L16.4 54.1C8.3 46 14.1 32.2 25.5 32.2H379.2C384.8 32.2 389.3 36.7 389.3 42.3V43.2C389.3 45.9 388.2 48.4 386.4 50.3L338.2 98.3C330.1 106.4 324.3 120.2 312.9 120.2H25.5C19.9 120.2 15.4 115.7 15.4 110.1V109.2C15.4 106.5 16.5 104 18.3 102.1H64.6Z" fill="#9945FF"/>
+											<path d="M330.1 170.5L378.3 122.5C386.4 114.4 380.6 100.6 369.2 100.6H15.5C9.9 100.6 5.4 105.1 5.4 110.7V111.6C5.4 114.3 6.5 116.8 8.3 118.7L56.5 166.7C64.6 174.8 70.4 188.6 81.8 188.6H369.2C374.8 188.6 379.3 184.1 379.3 178.5V177.6C379.3 174.9 378.2 172.4 376.4 170.5H330.1Z" fill="#14F195"/>
+										</svg>
+										Solana Wallet
 									</span>
 								</div>
 							</>
