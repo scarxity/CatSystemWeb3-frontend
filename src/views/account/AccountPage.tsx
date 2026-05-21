@@ -1,20 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Pencil,
 	Cat,
 	Heart,
 	Settings,
 	ShieldCheck,
-	Wallet,
 	Info,
 	LogOut,
 	ChevronRight,
+	Copy,
+	Check,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePrivy } from "@privy-io/react-auth";
 import useAuthStore from "@/app/stores/useAuthStore";
 import { removeToken } from "@/lib/cookies";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useGetMyCats } from "@/hooks/useGetMyCats";
 
 interface MenuItemProps {
 	icon: React.ReactNode;
@@ -71,8 +74,53 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 export default function AccountPage() {
-	const { logout } = usePrivy();
+	const { logout, user: privyUser } = usePrivy();
 	const storeLogout = useAuthStore.useLogout();
+	const user = useAuthStore.useUser();
+	const [copied, setCopied] = useState(false);
+	const [balance, setBalance] = useState<number | null>(null);
+	const { data: cats = [] } = useGetMyCats();
+	const catCount = cats.length;
+
+	const ownerName =
+		(user?.user_data?.name as string) ??
+		user?.name ??
+		user?.username ??
+		"User";
+
+	const walletAddress = user?.wallet || privyUser?.wallet?.address || "";
+	
+	const formatAddress = (address: string) => {
+		if (!address) return "";
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
+	};
+
+	useEffect(() => {
+		if (!walletAddress) return;
+		const fetchBalance = async () => {
+			try {
+				const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+				const pubkey = new PublicKey(walletAddress);
+				const lamports = await connection.getBalance(pubkey);
+				setBalance(lamports / LAMPORTS_PER_SOL);
+			} catch (err) {
+				console.error("Failed to fetch balance:", err);
+				setBalance(null);
+			}
+		};
+		fetchBalance();
+	}, [walletAddress]);
+
+	const handleCopyAddress = async () => {
+		if (!walletAddress) return;
+		try {
+			await navigator.clipboard.writeText(walletAddress);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		} catch (err) {
+			console.error("Failed to copy address:", err);
+		}
+	};
 
 	const handleLogout = async () => {
 		removeToken();
@@ -99,8 +147,28 @@ export default function AccountPage() {
 							/>
 						</div>
 						<div className="ml-4 md:ml-6 flex-1">
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Alex Morgan</h2>
-							<p className="text-gray-500 text-[15px] md:text-base mt-1">@alexmorgan</p>
+							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{ownerName}</h2>
+							<div className="flex flex-col mt-1 space-y-0.5">
+								<span className="flex items-center gap-1.5 text-gray-500 text-[15px] md:text-base">
+									Connected:{" "}
+									<button
+										type="button"
+										onClick={handleCopyAddress}
+										className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors cursor-pointer group font-medium"
+										title="Click to copy full address"
+									>
+										{formatAddress(walletAddress)}
+										{copied ? (
+											<Check className="w-3.5 h-3.5 text-emerald-500" />
+										) : (
+											<Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+										)}
+									</button>
+								</span>
+								<span className="text-gray-500 text-[15px] md:text-base">
+									Balance: <span className="text-emerald-500 font-medium">{balance !== null ? `${balance.toFixed(4)} SOL` : "Loading..."}</span>
+								</span>
+							</div>
 						</div>
 						<div className="hidden sm:block">
 							<button type="button" className="flex items-center px-5 py-2.5 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
@@ -124,7 +192,7 @@ export default function AccountPage() {
 						<MenuItem
 							icon={<Cat className="w-6 h-6" strokeWidth={1.5} />}
 							title="My Cats"
-							subtitle="1 cat registered"
+							subtitle={`${catCount} cat${catCount !== 1 ? "s" : ""} registered`}
 							rightContent="View My Cats"
 							iconBgColor="bg-blue-50"
 							iconColor="text-blue-500"
@@ -159,26 +227,7 @@ export default function AccountPage() {
 						/>
 					</div>
 
-					{/* 4. Wallet */}
-					<div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md">
-						<MenuItem
-							icon={<Wallet className="w-6 h-6" strokeWidth={1.5} />}
-							title="Wallet"
-							subtitle={
-								<div className="flex flex-col mt-0.5 space-y-0.5">
-									<span className="text-gray-500">Connected: 0x7f3a...</span>
-									<span className="text-gray-500">
-										Balance: <span className="text-emerald-500 font-medium">5.25 ETH</span>
-									</span>
-								</div>
-							}
-							iconBgColor="bg-blue-50"
-							iconColor="text-blue-600"
-							isLast
-						/>
-					</div>
-
-					{/* 5. About & Help */}
+					{/* 4. About & Help */}
 					<div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md">
 						<MenuItem
 							icon={<Info className="w-6 h-6" strokeWidth={1.5} />}
