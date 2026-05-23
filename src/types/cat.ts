@@ -7,13 +7,12 @@ export type CatIdentification = {
 };
 
 export type CatDNAProfile = {
-	breedPredisposition: string;
-	coatPattern: string;
-	eyeColorGene: string;
-	bloodType: string;
-	geneticDiversity: "Low" | "Medium" | "High";
-	geneticDiversityPercentage: number;
-	inbreedingCoefficient: string;
+	breed: string;
+	coatColor: string;
+	coatLength: string;
+	earType: string;
+	bodySize: string;
+	eyeColor: string;
 };
 
 export type CatTraits = {

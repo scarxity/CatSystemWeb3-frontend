@@ -9,10 +9,7 @@ import { useEffect, useState } from "react";
 import { useAuthLogin } from "@/hooks/useAuthLogin";
 import { getToken } from "@/lib/cookies";
 
-type Role = "breeder" | "cat-lover" | null;
-
 export default function LoginPage() {
-	const [selectedRole, setSelectedRole] = useState<Role>(null);
 	const { user, ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
 	const [isSyncing, setIsSyncing] = useState(false);
@@ -314,19 +311,11 @@ export default function LoginPage() {
 
 					{/* ── Role Cards ── */}
 					<div className="grid grid-cols-2 gap-3 mb-8">
-						<button
-							type="button"
-							onClick={() => setSelectedRole("breeder")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "breeder"
-									? "border-indigo-500 bg-indigo-50/60 shadow-md shadow-indigo-100"
-									: "border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm"
-								}`}
+						<div
+							className="group relative rounded-2xl border-2 p-4 text-center border-gray-200 bg-white"
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "breeder"
-										? "bg-indigo-500 text-white"
-										: "bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100"
-									}`}
+								className="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 bg-indigo-50 text-indigo-500"
 							>
 								<svg
 									width="20"
@@ -346,21 +335,13 @@ export default function LoginPage() {
 							<p className="text-[10px] text-gray-500 mt-0.5 leading-tight">
 								Manage lineage & registrations
 							</p>
-						</button>
+						</div>
 
-						<button
-							type="button"
-							onClick={() => setSelectedRole("cat-lover")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "cat-lover"
-									? "border-pink-400 bg-pink-50/60 shadow-md shadow-pink-100"
-									: "border-gray-200 bg-white hover:border-pink-300 hover:shadow-sm"
-								}`}
+						<div
+							className="group relative rounded-2xl border-2 p-4 text-center border-gray-200 bg-white"
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "cat-lover"
-										? "bg-pink-500 text-white"
-										: "bg-pink-50 text-pink-500 group-hover:bg-pink-100"
-									}`}
+								className="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 bg-pink-50 text-pink-500"
 							>
 								<svg
 									width="20"
@@ -380,7 +361,7 @@ export default function LoginPage() {
 							<p className="text-[10px] text-gray-500 mt-0.5 leading-tight">
 								Explore, verify & connect
 							</p>
-						</button>
+						</div>
 					</div>
 
 					{/* ── Google Login Button ── */}

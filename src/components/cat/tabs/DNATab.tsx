@@ -42,48 +42,39 @@ export default function DNATab({ cat }: { cat: Cat }) {
 				</div>
 				<div className="space-y-3">
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Breed Predisposition</span>
+						<span className="text-gray-500">Breed</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.breedPredisposition || cat.breed}
+							{cat.dnaProfile?.breed || cat.breed || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Coat Pattern</span>
+						<span className="text-gray-500">Eye Color</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.coatPattern || "Unknown"}
+							{cat.dnaProfile?.eyeColor || cat.eyeColor || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Eye Color Gene</span>
+						<span className="text-gray-500">Coat Color</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.eyeColorGene || "Unknown"}
+							{cat.dnaProfile?.coatColor || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Blood Type</span>
+						<span className="text-gray-500">Coat Length</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.bloodType || "Unknown"}
+							{cat.dnaProfile?.coatLength || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Genetic Diversity</span>
-						{cat.dnaProfile?.geneticDiversity ? (
-							<span className="font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-[11px] border border-emerald-100 flex items-center gap-1">
-								{cat.dnaProfile.geneticDiversity}
-								<div className="flex items-end gap-[1px] h-2.5">
-									<div className="w-[2px] h-[40%] bg-emerald-400"></div>
-									<div className="w-[2px] h-[70%] bg-emerald-400"></div>
-									<div className="w-[2px] h-[100%] bg-emerald-400"></div>
-								</div>
-							</span>
-						) : (
-							<span className="font-semibold text-gray-500">Pending Test</span>
-						)}
+						<span className="text-gray-500">Ear Type</span>
+						<span className="font-semibold text-gray-900">
+							{cat.dnaProfile?.earType || "Unknown"}
+						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Inbreeding Coefficient</span>
+						<span className="text-gray-500">Body Size</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.inbreedingCoefficient || "Unknown"}
+							{cat.dnaProfile?.bodySize || "Unknown"}
 						</span>
 					</div>
 				</div>

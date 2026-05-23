@@ -22,8 +22,61 @@ function resolveImageUrl(url: string | undefined | null): string {
 	return `${API_BASE ?? ""}${url}`;
 }
 
-function fromGender(val: Record<string, unknown>): "Male" | "Female" {
-	return "female" in val ? "Female" : "Male";
+function fromGender(val: any): "Male" | "Female" {
+	if (val === undefined || val === null) return "Male";
+	if (typeof val === "object" && !("toNumber" in val)) {
+		return "female" in val ? "Female" : "Male";
+	}
+	const num = typeof val?.toNumber === "function" ? val.toNumber() : Number(val);
+	return num === 1 ? "Female" : "Male";
+}
+
+function fromCoatLength(val: any): string {
+	if (val === undefined || val === null) return "Unknown";
+	if (typeof val === "object" && !("toNumber" in val)) {
+		if ("longHair" in val || "long" in val) return "Long Hair";
+		if ("mediumHair" in val || "medium" in val) return "Medium Hair";
+		if ("shortHair" in val || "short" in val) return "Short Hair";
+	}
+	const num = typeof val?.toNumber === "function" ? val.toNumber() : Number(val);
+	const map: Record<number, string> = { 0: "Long Hair", 1: "Medium Hair", 2: "Short Hair" };
+	return map[num] ?? "Unknown";
+}
+
+function fromEarType(val: any): string {
+	if (val === undefined || val === null) return "Unknown";
+	if (typeof val === "object" && !("toNumber" in val)) {
+		if ("pointed" in val) return "Pointed";
+		if ("rounded" in val) return "Rounded";
+		if ("folded" in val) return "Folded";
+	}
+	const num = typeof val?.toNumber === "function" ? val.toNumber() : Number(val);
+	const map: Record<number, string> = { 0: "Pointed", 1: "Rounded", 2: "Folded" };
+	return map[num] ?? "Unknown";
+}
+
+function fromBodySize(val: any): string {
+	if (val === undefined || val === null) return "Unknown";
+	if (typeof val === "object" && !("toNumber" in val)) {
+		if ("small" in val) return "Small";
+		if ("medium" in val) return "Medium";
+		if ("large" in val) return "Large";
+	}
+	const num = typeof val?.toNumber === "function" ? val.toNumber() : Number(val);
+	const map: Record<number, string> = { 0: "Small", 1: "Medium", 2: "Large" };
+	return map[num] ?? "Unknown";
+}
+
+function parseDescription(description: string | undefined): { personality: string[], about: string | undefined } {
+	if (!description) return { personality: [], about: undefined };
+	// Supports format: "Traits: Friendly, Curious, Playful. some note"
+	const traitsMatch = description.match(/Traits?:\s*([^.]+)(?:\.\s*(.*))?/i);
+	if (traitsMatch) {
+		const personality = traitsMatch[1].split(",").map((t) => t.trim()).filter(Boolean);
+		const about = traitsMatch[2] ? traitsMatch[2].trim() : undefined;
+		return { personality, about };
+	}
+	return { personality: [], about: description };
 }
 
 async function fetchMyCats(walletAddress: string): Promise<Cat[]> {
@@ -43,14 +96,36 @@ async function fetchMyCats(walletAddress: string): Promise<Cat[]> {
 		// biome-ignore lint/suspicious/noExplicitAny: Anchor decoded account, not strongly typed
 		const d = acc.account as any;
 		const ownerPubkey = d.owner?.toBase58?.() ?? walletAddress;
+		const description = d.description as string | undefined;
+		const { personality, about } = parseDescription(description);
 
 		return {
 			id: acc.publicKey.toBase58() as string,
 			name: d.name as string,
 			breed: d.breed as string,
-			gender: fromGender(d.gender as Record<string, unknown>),
+			gender: fromGender(d.gender),
 			eyeColor: d.eyeColor as string,
-			about: (d.description as string) || undefined,
+			about: about,
+			// DNA profile – populated from on-chain data
+			dnaProfile: {
+				breed: d.breed as string,
+				coatColor: (d.coatColor as string) || "",
+				coatLength: fromCoatLength(d.coatLength as number),
+				earType: fromEarType(d.earType as number),
+				bodySize: fromBodySize(d.bodySize as number),
+				eyeColor: (d.eyeColor as string) || "",
+			},
+			// Bio
+			bio: personality.length > 0 ? {
+				dateOfBirth: "",
+				color: d.coatColor as string || "",
+				personality,
+				vaccinated: false,
+				neutered: false,
+				indoor: false,
+				diet: "",
+				favoriteFood: "",
+			} : undefined,
 			owner: {
 				name: "Owner",
 				walletAddress: ownerPubkey,
