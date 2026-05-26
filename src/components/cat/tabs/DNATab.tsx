@@ -44,13 +44,13 @@ export default function DNATab({ cat }: { cat: Cat }) {
 					<div className="flex justify-between items-center text-[13px]">
 						<span className="text-gray-500">Breed</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.breed || cat.breed || "Unknown"}
+							{cat.dnaProfile?.breed || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
 						<span className="text-gray-500">Eye Color</span>
 						<span className="font-semibold text-gray-900">
-							{cat.dnaProfile?.eyeColor || cat.eyeColor || "Unknown"}
+							{cat.dnaProfile?.eyeColor || "Unknown"}
 						</span>
 					</div>
 					<div className="flex justify-between items-center text-[13px]">
