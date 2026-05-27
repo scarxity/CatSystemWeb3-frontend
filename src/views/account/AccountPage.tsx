@@ -82,14 +82,10 @@ export default function AccountPage() {
 	const { data: cats = [] } = useGetMyCats();
 	const catCount = cats.length;
 
-	const ownerName =
-		(user?.user_data?.name as string) ??
-		user?.name ??
-		user?.username ??
-		"User";
+	const ownerName = String(user?.user_data?.name || "");
 
-	const walletAddress = user?.wallet || privyUser?.wallet?.address || "";
-	
+	const walletAddress = user?.wallet || "";
+
 	const formatAddress = (address: string) => {
 		if (!address) return "";
 		return `${address.slice(0, 6)}...${address.slice(-4)}`;
