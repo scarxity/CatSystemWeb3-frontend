@@ -5,6 +5,7 @@ import { useCreateWallet } from "@privy-io/react-auth/solana";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+
 import { useAuthLogin } from "@/hooks/useAuthLogin";
 import { getToken } from "@/lib/cookies";
 
@@ -30,7 +31,7 @@ export default function LoginPage() {
 
 			// 3. Check for the Solana Wallet
 			const solanaWallet = user.linkedAccounts.find(
-				(acc: any) => acc.type === "wallet" && acc.chainType === "solana",
+				(acc: any) => acc.type === 'wallet' && acc.chainType === 'solana'
 			);
 
 			// 4. Provisioning Gate: If no Solana wallet, create it first
@@ -85,9 +86,7 @@ export default function LoginPage() {
 	// ── Redirect after successful login or if already logged in ──
 	useEffect(() => {
 		if (authLogin.isSuccess || getToken()) {
-			const sessionExpired = new URLSearchParams(window.location.search).get(
-				"sessionExpired",
-			);
+			const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 			if (sessionExpired !== "true") {
 				window.location.replace("/");
 			}
@@ -98,9 +97,7 @@ export default function LoginPage() {
 	// ── Handle "sessionExpired" query param ──
 	useEffect(() => {
 		if (!ready || !authenticated) return;
-		const sessionExpired = new URLSearchParams(window.location.search).get(
-			"sessionExpired",
-		);
+		const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 		if (sessionExpired === "true") {
 			logout();
 		}
@@ -320,18 +317,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("breeder")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "breeder"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "breeder"
 									? "border-indigo-500 bg-indigo-50/60 shadow-md shadow-indigo-100"
 									: "border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "breeder"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "breeder"
 										? "bg-indigo-500 text-white"
 										: "bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
@@ -356,18 +351,16 @@ export default function LoginPage() {
 						<button
 							type="button"
 							onClick={() => setSelectedRole("cat-lover")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${
-								selectedRole === "cat-lover"
+							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "cat-lover"
 									? "border-pink-400 bg-pink-50/60 shadow-md shadow-pink-100"
 									: "border-gray-200 bg-white hover:border-pink-300 hover:shadow-sm"
-							}`}
+								}`}
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${
-									selectedRole === "cat-lover"
+								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "cat-lover"
 										? "bg-pink-500 text-white"
 										: "bg-pink-50 text-pink-500 group-hover:bg-pink-100"
-								}`}
+									}`}
 							>
 								<svg
 									width="20"
