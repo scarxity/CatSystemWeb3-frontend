@@ -9,10 +9,7 @@ import { useEffect, useState } from "react";
 import { useAuthLogin } from "@/hooks/useAuthLogin";
 import { getToken } from "@/lib/cookies";
 
-type Role = "breeder" | "cat-lover" | null;
-
 export default function LoginPage() {
-	const [selectedRole, setSelectedRole] = useState<Role>(null);
 	const { user, ready, authenticated, getAccessToken, logout } = usePrivy();
 	const authLogin = useAuthLogin();
 	const [isSyncing, setIsSyncing] = useState(false);
@@ -314,19 +311,11 @@ export default function LoginPage() {
 
 					{/* ── Role Cards ── */}
 					<div className="grid grid-cols-2 gap-3 mb-8">
-						<button
-							type="button"
-							onClick={() => setSelectedRole("breeder")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "breeder"
-									? "border-indigo-500 bg-indigo-50/60 shadow-md shadow-indigo-100"
-									: "border-gray-200 bg-white hover:border-indigo-300 hover:shadow-sm"
-								}`}
+						<div
+							className="group relative rounded-2xl border-2 p-4 text-center border-gray-200 bg-white"
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "breeder"
-										? "bg-indigo-500 text-white"
-										: "bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100"
-									}`}
+								className="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 bg-indigo-50 text-indigo-500"
 							>
 								<svg
 									width="20"
@@ -346,21 +335,13 @@ export default function LoginPage() {
 							<p className="text-[10px] text-gray-500 mt-0.5 leading-tight">
 								Manage lineage & registrations
 							</p>
-						</button>
+						</div>
 
-						<button
-							type="button"
-							onClick={() => setSelectedRole("cat-lover")}
-							className={`group relative rounded-2xl border-2 p-4 text-center transition-all duration-200 cursor-pointer ${selectedRole === "cat-lover"
-									? "border-pink-400 bg-pink-50/60 shadow-md shadow-pink-100"
-									: "border-gray-200 bg-white hover:border-pink-300 hover:shadow-sm"
-								}`}
+						<div
+							className="group relative rounded-2xl border-2 p-4 text-center border-gray-200 bg-white"
 						>
 							<div
-								className={`w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 transition-colors ${selectedRole === "cat-lover"
-										? "bg-pink-500 text-white"
-										: "bg-pink-50 text-pink-500 group-hover:bg-pink-100"
-									}`}
+								className="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-2 bg-pink-50 text-pink-500"
 							>
 								<svg
 									width="20"
@@ -380,7 +361,7 @@ export default function LoginPage() {
 							<p className="text-[10px] text-gray-500 mt-0.5 leading-tight">
 								Explore, verify & connect
 							</p>
-						</button>
+						</div>
 					</div>
 
 					{/* ── Google Login Button ── */}
@@ -449,7 +430,7 @@ export default function LoginPage() {
 						) : (
 							<>
 								{/* Wallet icon */}
-								<div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg flex items-center justify-center shadow-sm">
+								<div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-teal-400 rounded-lg flex items-center justify-center shadow-sm">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="white">
 										<title>Wallet</title>
 										<path d="M21 18V19C21 20.1 20.1 21 19 21H5C3.89 21 3 20.1 3 19V5C3 3.9 3.89 3 5 3H19C20.1 3 21 3.9 21 5V6H12C10.89 6 10 6.9 10 8V16C10 17.1 10.89 18 12 18H21ZM12 16H22V8H12V16ZM16 13.5C15.17 13.5 14.5 12.83 14.5 12C14.5 11.17 15.17 10.5 16 10.5C16.83 10.5 17.5 11.17 17.5 12C17.5 12.83 16.83 13.5 16 13.5Z" />
@@ -457,8 +438,15 @@ export default function LoginPage() {
 								</div>
 								<div className="text-left">
 									<span className="text-sm font-semibold">Connect Wallet</span>
-									<span className="block text-[10px] text-gray-400 font-normal -mt-0.5">
-										🦊 MetaMask / Web3
+									<span className="flex items-center gap-1.5 text-[10px] text-gray-400 font-normal -mt-0.5">
+										<Image
+											src="/assets/solana-logo-on-transparent-removebg.png"
+											alt="Solana"
+											width={20}
+											height={20}
+											className="object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+										/>
+										Solana Wallet
 									</span>
 								</div>
 							</>
