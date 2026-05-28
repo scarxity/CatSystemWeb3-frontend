@@ -15,11 +15,11 @@ import {
 import { parseAsInteger, useQueryStates } from "nuqs";
 import * as React from "react";
 
-import Filter from "@/components/table/Filter";
-import PaginationControl from "@/components/table/PaginationControl";
-import TBody from "@/components/table/TBody";
-import THead from "@/components/table/THead";
-import TOption from "@/components/table/TOption";
+import Filter from "@/components/ui/table/Filter";
+import PaginationControl from "@/components/ui/table/PaginationControl";
+import TBody from "@/components/ui/table/TBody";
+import THead from "@/components/ui/table/THead";
+import TOption from "@/components/ui/table/TOption";
 import clsxm from "@/lib/clsxm";
 
 export type ColumnMetaType = {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { NavItemButton } from "@/components/navbar/NavItemButton";
+import { NavItemButton } from "@/components/layout/NavItemButton";
 import type { NavItem } from "@/types/cat";
 
 interface NavbarProps {

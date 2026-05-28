@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
-import SelectInput from "@/components/form/SelectInput";
+import SelectInput from "@/components/ui/form/SelectInput";
 
 type TOptionProps = {
 	placeholder?: string;

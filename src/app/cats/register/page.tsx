@@ -1,8 +1,8 @@
 "use client";
 
 import withAuth from "@/components/hoc/withAuth";
-import Layout from "@/layouts/Layout";
-import RegisterCatPage from "@/views/cats/register/RegisterCatPage";
+import Layout from "@/components/layout/Layout";
+import RegisterCatPage from "@/components/pages/cats/register/RegisterCatPage";
 
 /**
  * Route: /cats/register

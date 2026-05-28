@@ -1,8 +1,8 @@
 "use client";
 
 import withAuth from "@/components/hoc/withAuth";
-import Layout from "@/layouts/Layout";
-import MarketplacePage from "@/views/marketplace/MarketplacePage";
+import Layout from "@/components/layout/Layout";
+import MarketplacePage from "@/components/pages/marketplace/MarketplacePage";
 
 function Page() {
   return (

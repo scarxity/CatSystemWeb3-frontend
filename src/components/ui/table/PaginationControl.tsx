@@ -1,7 +1,7 @@
 import type { RowData, Table } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type * as React from "react";
-import Button from "@/components/button/Button";
+import Button from "@/components/ui/button/Button";
 import clsxm from "@/lib/clsxm";
 import { buildPaginationControl } from "@/lib/pagination";
 

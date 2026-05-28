@@ -1,9 +1,9 @@
 import { Eye, EyeOff, type LucideProps } from "lucide-react";
 import * as React from "react";
 import { get, type RegisterOptions, useFormContext } from "react-hook-form";
-import ErrorMessage from "@/components/form/ErrorMessage";
-import HelperText from "@/components/form/HelperText";
-import LabelText from "@/components/form/LabelText";
+import ErrorMessage from "@/components/ui/form/ErrorMessage";
+import HelperText from "@/components/ui/form/HelperText";
+import LabelText from "@/components/ui/form/LabelText";
 import clsxm from "@/lib/clsxm";
 
 type LucideIconType = React.ComponentType<LucideProps>;

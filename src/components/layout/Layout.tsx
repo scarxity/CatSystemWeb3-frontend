@@ -1,4 +1,5 @@
-import Navbar from "@/layouts/Navbar";
+import Navbar from "@/components/layout/Navbar";
+import { NAV_ITEMS } from "@/config/nav";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -6,11 +7,6 @@ interface LayoutProps {
 	className?: string;
 }
 
-/**
- * Root application layout.
- * - Renders the sidebar (desktop/tablet) / bottom nav (mobile) when withNavbar=true
- * - Applies correct margin/padding offsets so content never sits behind the nav
- */
 export default function Layout({
 	children,
 	withNavbar = true,
@@ -18,14 +14,18 @@ export default function Layout({
 }: LayoutProps) {
 	return (
 		<div className="flex min-h-screen bg-gray-50">
-			{withNavbar && <Navbar />}
+			{withNavbar && (
+				<Navbar
+					items={NAV_ITEMS}
+					appName="OLpaw"
+					logoSrc="/assets/Logo Biru.png"
+				/>
+			)}
 
 			<main
 				className={[
 					"flex-1 w-full min-w-0",
-					/* Sidebar offset on md+ */
 					withNavbar ? "xl:ml-[220px]" : "",
-					/* Bottom nav padding on mobile */
 					withNavbar ? "pb-[68px] xl:pb-0" : "",
 					className ?? "",
 				]
