@@ -1,8 +1,8 @@
 "use client";
 
 import withAuth from "@/components/hoc/withAuth";
-import Layout from "@/layouts/Layout";
-import AccountPage from "@/views/account/AccountPage";
+import Layout from "@/components/layout/Layout";
+import AccountPage from "@/components/pages/account/AccountPage";
 
 function Page() {
   return (

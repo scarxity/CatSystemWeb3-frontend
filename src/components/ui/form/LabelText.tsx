@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import Typography from "@/components/Typography";
+import Typography from "@/components/ui/Typography";
 import clsxm from "@/lib/clsxm";
 
 export default function LabelText({

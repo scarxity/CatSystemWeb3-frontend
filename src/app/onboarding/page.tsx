@@ -1,6 +1,6 @@
 "use client";
 
-import ProtectedOnboardingPage from "@/views/onboarding/ProtectedOnboardingPage";
+import ProtectedOnboardingPage from "@/components/pages/onboarding/ProtectedOnboardingPage";
 
 export default function Page() {
 	return <ProtectedOnboardingPage />;

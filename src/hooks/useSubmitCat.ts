@@ -6,7 +6,7 @@ import { useWallets } from "@privy-io/react-auth/solana";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 
-import { useRegisterCat } from "@/views/cats/register/context/RegisterCatContext";
+import { useRegisterCat } from "@/components/pages/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
 import api from "@/lib/api";
 import type { BioProfileData } from "@/types/registerCat";

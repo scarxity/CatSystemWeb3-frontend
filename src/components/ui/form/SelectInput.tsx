@@ -13,9 +13,9 @@ import Select, {
 	type MultiValue,
 	type StylesConfig,
 } from "react-select";
-import ErrorMessage from "@/components/form/ErrorMessage";
-import HelperText from "@/components/form/HelperText";
-import LabelText from "@/components/form/LabelText";
+import ErrorMessage from "@/components/ui/form/ErrorMessage";
+import HelperText from "@/components/ui/form/HelperText";
+import LabelText from "@/components/ui/form/LabelText";
 import clsxm from "@/lib/clsxm";
 import type { ExtractProps } from "@/lib/helper";
 

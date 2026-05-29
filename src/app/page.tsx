@@ -1,5 +1,5 @@
-import Layout from "@/layouts/Layout";
-import HomePage from "@/views/home/ProtectedHomePage";
+import Layout from "@/components/layout/Layout";
+import HomePage from "@/components/pages/home/ProtectedHomePage";
 
 export default function Page() {
   return (

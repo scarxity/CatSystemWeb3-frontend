@@ -2,7 +2,7 @@
 import { flexRender, type RowData, type Table } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
 import type * as React from "react";
-import type { ColumnMetaType } from "@/components/table/Table";
+import type { ColumnMetaType } from "@/components/ui/table/Table";
 import clsxm from "@/lib/clsxm";
 
 type THeadProps<T extends RowData> = {

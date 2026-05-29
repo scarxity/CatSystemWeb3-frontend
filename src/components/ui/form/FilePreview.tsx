@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
 import * as React from "react";
-import Button from "@/components/button/Button";
-import HelperText from "@/components/form/HelperText";
-import LightboxModal from "@/components/LightboxModal";
+import Button from "@/components/ui/button/Button";
+import HelperText from "@/components/ui/form/HelperText";
+import LightboxModal from "@/components/ui/LightboxModal";
 import clsxm from "@/lib/clsxm";
 import type { FileWithPreview } from "@/types/dropzone";
 
