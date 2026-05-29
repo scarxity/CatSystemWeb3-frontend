@@ -82,7 +82,9 @@ export default function LoginPage() {
 
 	// ── Redirect after successful login or if already logged in ──
 	useEffect(() => {
-		if (authLogin.isSuccess || getToken()) {
+		if (authLogin.isSuccess) {
+			window.location.replace("/");
+		} else if (getToken()) {
 			const sessionExpired = new URLSearchParams(window.location.search).get("sessionExpired");
 			if (sessionExpired !== "true") {
 				window.location.replace("/");
