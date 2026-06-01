@@ -17,7 +17,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import useAuthStore from "@/app/stores/useAuthStore";
 import { removeToken } from "@/lib/cookies";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { useGetMyCats } from "@/hooks/useGetMyCats";
+import { useCountMyCats } from "@/hooks/useCountMyCats";
 
 interface MenuItemProps {
 	icon: React.ReactNode;
@@ -79,8 +79,7 @@ export default function AccountPage() {
 	const user = useAuthStore.useUser();
 	const [copied, setCopied] = useState(false);
 	const [balance, setBalance] = useState<number | null>(null);
-	const { data: cats = [] } = useGetMyCats();
-	const catCount = cats.length;
+	const { data: catCount = 0 } = useCountMyCats();
 
 	const ownerName = String(user?.user_data?.name || "");
 
