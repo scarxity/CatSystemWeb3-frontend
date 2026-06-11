@@ -49,7 +49,7 @@ async function uploadCatImages(photo1: File, photo2: File) {
   fd.append("images", photo1);
   fd.append("images", photo2);
   const { data } = await api.post<{ image_url_1: string; image_url_2: string }>(
-    "/upload/cat-images",
+    "/cats/images",
     fd,
     { headers: { "Content-Type": "multipart/form-data" } },
   );
