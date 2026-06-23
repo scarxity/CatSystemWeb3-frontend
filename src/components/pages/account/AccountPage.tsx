@@ -10,6 +10,7 @@ import {
 	ChevronRight,
 	Copy,
 	Check,
+	Award,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,7 +82,10 @@ export default function AccountPage() {
 	const [balance, setBalance] = useState<number | null>(null);
 	const { data: catCount = 0 } = useCountMyCats();
 
-	const ownerName = String(user?.user_data?.name || "");
+	const userData = user?.user_data as Record<string, unknown> | null | undefined;
+	const ownerName = String(userData?.name || "");
+	const userType = String(userData?.type || "cat lover");
+	const isRequestPending = userData?.status === "pending";
 
 	const walletAddress = user?.wallet || "";
 
@@ -142,7 +146,12 @@ export default function AccountPage() {
 							/>
 						</div>
 						<div className="ml-4 md:ml-6 flex-1">
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{ownerName}</h2>
+							<div className="flex items-center gap-3">
+								<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{ownerName}</h2>
+								<span className={`px-2.5 py-1 text-xs font-medium rounded-full ${userType === 'breeder' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+									{userType === 'breeder' ? 'Breeder' : 'Cat Lover'}
+								</span>
+							</div>
 							<div className="flex flex-col mt-1 space-y-0.5">
 								<span className="flex items-center gap-1.5 text-gray-500 text-[15px] md:text-base">
 									Connected:{" "}
@@ -165,7 +174,16 @@ export default function AccountPage() {
 								</span>
 							</div>
 						</div>
-						<div className="hidden sm:block">
+						<div className="hidden sm:flex items-center gap-3">
+							{userType !== "breeder" && (
+								<Link
+									href="/account/request-breeder"
+									className="flex items-center px-5 py-2.5 border border-amber-200 bg-amber-50 rounded-xl text-amber-700 font-medium text-sm hover:bg-amber-100 transition-colors shadow-sm"
+								>
+									<Award className="w-4 h-4 mr-2" />
+									Request Breeder
+								</Link>
+							)}
 							<button type="button" className="flex items-center px-5 py-2.5 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
 								<Pencil className="w-4 h-4 mr-2" />
 								Edit Profile
@@ -173,8 +191,17 @@ export default function AccountPage() {
 						</div>
 					</div>
 					{/* Mobile Edit Button */}
-					<div className="w-full mt-4 sm:hidden flex justify-end">
-						<button type="button" className="flex items-center px-4 py-2 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors">
+					<div className="w-full mt-4 sm:hidden flex flex-col gap-3 justify-end">
+						{userType !== "breeder" && (
+							<Link
+								href="/account/request-breeder"
+								className="flex justify-center items-center px-4 py-2 border border-amber-200 bg-amber-50 rounded-xl text-amber-700 font-medium text-sm hover:bg-amber-100 transition-colors shadow-sm"
+							>
+								<Award className="w-4 h-4 mr-2" />
+								Request Breeder
+							</Link>
+						)}
+						<button type="button" className="flex justify-center items-center px-4 py-2 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
 							<Pencil className="w-4 h-4 mr-2" />
 							Edit Profile
 						</button>

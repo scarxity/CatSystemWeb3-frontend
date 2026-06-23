@@ -5,8 +5,10 @@ export type User = {
 	username?: string;
 	email?: string;
 	role?: string;
+	type?: string;
 	user_data?: Record<string, unknown> | null;
 	bio?: string;
+	status?: string;
 	created_at?: string;
 	updated_at?: string;
 };
