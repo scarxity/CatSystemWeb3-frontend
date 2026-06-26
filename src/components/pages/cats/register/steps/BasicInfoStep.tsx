@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, CloudUpload, Trash2 } from "lucide-react";
+import { CalendarDays, CloudUpload, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef } from "react";
 import { useRegisterCat } from "../context/RegisterCatContext";
@@ -8,6 +8,7 @@ import StepHeader from "../components/StepHeader";
 import StepNavButtons from "../components/StepNavButtons";
 import StepProgressBar from "../components/StepProgressBar";
 import type { CatGender } from "@/types/cat";
+import { REQUIRED_IMAGE_SLOTS, MAX_IMAGES, type CatImageUpload } from "@/types/registerCat";
 
 /* ──────────────────────────────────────────────
    Helper – calculate age from DOB string
@@ -27,102 +28,121 @@ function calcAge(dob: string): string | null {
 	return "Age: < 1 month";
 }
 
-/* ================================================================
-   FIELDS ONLY — used by the desktop layout panel
-   ================================================================ */
-type PhotoSlot = "photo" | "photo2";
-
-function PhotoSlotInput({
-	label,
-	slot,
-	preview,
+/* ──────────────────────────────────────────────
+   Single Image Upload Slot
+────────────────────────────────────────────── */
+function ImageUploadSlot({
+	index,
+	image,
+	isRequired,
+	onFileSet,
+	onRemove,
+	onDescriptionChange,
 }: {
-	label: string;
-	slot: PhotoSlot;
-	preview: string | null;
+	index: number;
+	image: CatImageUpload;
+	isRequired: boolean;
+	onFileSet: (index: number, file: File) => void;
+	onRemove: (index: number) => void;
+	onDescriptionChange: (index: number, desc: string) => void;
 }) {
-	const { updateBasicInfo } = useRegisterCat();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const fileField = slot;
-	const previewField = (slot === "photo" ? "photoPreview" : "photo2Preview") as "photoPreview" | "photo2Preview";
-
-	const setFile = useCallback(
-		(file: File) => {
-			const reader = new FileReader();
-			reader.onloadend = () =>
-				updateBasicInfo({
-					[fileField]: file,
-					[previewField]: reader.result as string,
-				});
-			reader.readAsDataURL(file);
-		},
-		[fileField, previewField, updateBasicInfo],
+	const handleFile = useCallback(
+		(file: File) => onFileSet(index, file),
+		[index, onFileSet],
 	);
 
 	const onChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
 			const file = e.target.files?.[0];
-			if (file) setFile(file);
+			if (file) handleFile(file);
 		},
-		[setFile],
+		[handleFile],
 	);
 
 	const onDrop = useCallback(
 		(e: React.DragEvent<HTMLDivElement>) => {
 			e.preventDefault();
 			const file = e.dataTransfer.files?.[0];
-			if (file && file.type.startsWith("image/")) setFile(file);
+			if (file && file.type.startsWith("image/")) handleFile(file);
 		},
-		[setFile],
+		[handleFile],
 	);
 
-	const remove = useCallback(() => {
-		updateBasicInfo({ [fileField]: null, [previewField]: null });
-		if (inputRef.current) inputRef.current.value = "";
-	}, [fileField, previewField, updateBasicInfo]);
-
 	return (
-		<div>
-			<p className="text-xs font-semibold text-gray-700 mb-1.5">{label}</p>
+		<div className="flex flex-col gap-1.5">
+			{/* Label */}
+			<div className="flex items-center justify-between">
+				<p className="text-xs font-semibold text-gray-700">
+					{image.description || `Image ${index + 1}`}
+					{isRequired && <span className="text-red-500 ml-0.5">*</span>}
+				</p>
+				{!isRequired && (
+					<button
+						type="button"
+						onClick={() => onRemove(index)}
+						className="text-red-400 hover:text-red-600 transition-colors"
+						aria-label={`Remove image ${index + 1}`}
+					>
+						<Trash2 size={13} />
+					</button>
+				)}
+			</div>
+
+			{/* Upload area + Preview */}
 			<div className="grid grid-cols-2 gap-2">
 				<div
 					role="button"
 					tabIndex={0}
-					aria-label={`Upload ${label}`}
+					aria-label={`Upload ${image.description}`}
 					onClick={() => inputRef.current?.click()}
 					onKeyDown={(e) => {
 						if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
 					}}
 					onDragOver={(e) => e.preventDefault()}
 					onDrop={onDrop}
-					className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-[#4359ea]/40 rounded-2xl p-3 cursor-pointer hover:border-[#4359ea] hover:bg-[#4359ea]/5 transition-all min-h-[120px]"
+					className="flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-[#4359ea]/40 rounded-2xl p-3 cursor-pointer hover:border-[#4359ea] hover:bg-[#4359ea]/5 transition-all min-h-[100px]"
 				>
-					<CloudUpload size={28} className="text-[#4359ea]" />
-					<p className="text-[11px] font-medium text-gray-600 text-center leading-tight">
+					<CloudUpload size={24} className="text-[#4359ea]" />
+					<p className="text-[10px] font-medium text-gray-600 text-center leading-tight">
 						Drag &amp; drop
 					</p>
-					<p className="text-[10px] text-[#4359ea] font-semibold">or browse</p>
-					<p className="text-[9px] text-gray-400">JPG, PNG ≤5MB</p>
+					<p className="text-[9px] text-[#4359ea] font-semibold">or browse</p>
+					<p className="text-[8px] text-gray-400">JPG, PNG ≤5MB</p>
 				</div>
-				{preview ? (
-					<div className="relative rounded-2xl overflow-hidden min-h-[120px] bg-gray-100">
-						<Image src={preview} alt={`${label} preview`} fill className="object-cover" />
+
+				{image.preview ? (
+					<div className="relative rounded-2xl overflow-hidden min-h-[100px] bg-gray-100">
+						<Image src={image.preview} alt={`${image.description} preview`} fill className="object-cover" />
 						<button
 							type="button"
-							onClick={remove}
-							aria-label={`Remove ${label}`}
+							onClick={() => onRemove(index)}
+							aria-label={`Remove ${image.description}`}
 							className="absolute top-1.5 right-1.5 bg-white rounded-full p-1 shadow-md hover:bg-red-50 transition-colors"
 						>
 							<Trash2 size={13} className="text-red-500" />
 						</button>
 					</div>
 				) : (
-					<div className="flex items-center justify-center rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 min-h-[120px] text-gray-300 text-[10px] select-none">
+					<div className="flex items-center justify-center rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 min-h-[100px] text-gray-300 text-[10px] select-none">
 						Preview
 					</div>
 				)}
 			</div>
+
+			{/* Description (editable for optional slots) */}
+			{!isRequired && (
+				<input
+					type="text"
+					value={image.description}
+					onChange={(e) => onDescriptionChange(index, e.target.value)}
+					placeholder="Image description..."
+					maxLength={64}
+					className="px-3 py-1.5 rounded-xl border border-gray-200 text-xs text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4359ea]/30 focus:border-[#4359ea] transition-all"
+				/>
+			)}
+
 			<input
 				ref={inputRef}
 				type="file"
@@ -134,12 +154,67 @@ function PhotoSlotInput({
 	);
 }
 
+/* ================================================================
+   FIELDS ONLY — used by the desktop layout panel
+   ================================================================ */
 export function BasicInfoFields() {
 	const { formData, updateBasicInfo } = useRegisterCat();
-	const { catName, dateOfBirth, gender, photoPreview, photo2Preview } =
-		formData.basicInfo;
+	const { catName, dateOfBirth, gender, images } = formData.basicInfo;
 	const dobInputRef = useRef<HTMLInputElement>(null);
 	const age = useMemo(() => calcAge(dateOfBirth), [dateOfBirth]);
+
+	/* ── Image handlers ─────────────────────────── */
+	const setImageFile = useCallback(
+		(index: number, file: File) => {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				const newImages = [...images];
+				newImages[index] = {
+					...newImages[index],
+					file,
+					preview: reader.result as string,
+				};
+				updateBasicInfo({ images: newImages });
+			};
+			reader.readAsDataURL(file);
+		},
+		[images, updateBasicInfo],
+	);
+
+	const removeImage = useCallback(
+		(index: number) => {
+			const isRequired = index < REQUIRED_IMAGE_SLOTS.length;
+			if (isRequired) {
+				// Just clear the file, keep the slot
+				const newImages = [...images];
+				newImages[index] = { ...newImages[index], file: null, preview: null };
+				updateBasicInfo({ images: newImages });
+			} else {
+				// Remove the optional slot entirely
+				const newImages = images.filter((_, i) => i !== index);
+				updateBasicInfo({ images: newImages });
+			}
+		},
+		[images, updateBasicInfo],
+	);
+
+	const updateDescription = useCallback(
+		(index: number, description: string) => {
+			const newImages = [...images];
+			newImages[index] = { ...newImages[index], description };
+			updateBasicInfo({ images: newImages });
+		},
+		[images, updateBasicInfo],
+	);
+
+	const addOptionalSlot = useCallback(() => {
+		if (images.length >= MAX_IMAGES) return;
+		const newImages: CatImageUpload[] = [
+			...images,
+			{ file: null, preview: null, description: "" },
+		];
+		updateBasicInfo({ images: newImages });
+	}, [images, updateBasicInfo]);
 
 	return (
 		<>
@@ -206,66 +281,92 @@ export function BasicInfoFields() {
 				)}
 			</div>
 
-			{/* ═══ Gender + Photo side by side on desktop ═══ */}
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-				{/* Gender */}
-				<div>
-					<p className="text-sm font-bold text-gray-900 mb-2">
-						Gender <span className="text-red-500">*</span>
-					</p>
-					<div className="grid grid-cols-2 gap-2">
-						{(["Male", "Female"] as CatGender[]).map((g) => {
-							const isSelected = gender === g;
-							const isMale = g === "Male";
-							return (
-								<button
-									key={g}
-									type="button"
-									onClick={() => updateBasicInfo({ gender: g })}
+			{/* ═══ Gender ═══ */}
+			<div>
+				<p className="text-sm font-bold text-gray-900 mb-2">
+					Gender <span className="text-red-500">*</span>
+				</p>
+				<div className="grid grid-cols-2 gap-2">
+					{(["Male", "Female"] as CatGender[]).map((g) => {
+						const isSelected = gender === g;
+						const isMale = g === "Male";
+						return (
+							<button
+								key={g}
+								type="button"
+								onClick={() => updateBasicInfo({ gender: g })}
+								className={[
+									"flex items-center gap-2 rounded-2xl border-2 px-3 py-3 text-sm font-semibold transition-all duration-200",
+									isSelected
+										? isMale
+											? "border-[#4359ea] bg-[#4359ea]/5 text-[#4359ea]"
+											: "border-pink-400 bg-pink-50 text-pink-500"
+										: "border-gray-200 bg-white text-gray-500 hover:border-gray-300",
+								].join(" ")}
+							>
+								<span
 									className={[
-										"flex items-center gap-2 rounded-2xl border-2 px-3 py-3 text-sm font-semibold transition-all duration-200",
+										"w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
 										isSelected
-											? isMale
-												? "border-[#4359ea] bg-[#4359ea]/5 text-[#4359ea]"
-												: "border-pink-400 bg-pink-50 text-pink-500"
-											: "border-gray-200 bg-white text-gray-500 hover:border-gray-300",
+											? isMale ? "border-[#4359ea]" : "border-pink-400"
+											: "border-gray-300",
 									].join(" ")}
 								>
-									<span
-										className={[
-											"w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
-											isSelected
-												? isMale ? "border-[#4359ea]" : "border-pink-400"
-												: "border-gray-300",
-										].join(" ")}
-									>
-										{isSelected && (
-											<span
-												className={`w-2 h-2 rounded-full ${isMale ? "bg-[#4359ea]" : "bg-pink-400"}`}
-											/>
-										)}
-									</span>
-									<span className={`text-base ${isMale ? "text-blue-500" : "text-pink-400"}`} aria-hidden="true">
-										{isMale ? "♂" : "♀"}
-									</span>
-									{g}
-								</button>
-							);
-						})}
-					</div>
+									{isSelected && (
+										<span
+											className={`w-2 h-2 rounded-full ${isMale ? "bg-[#4359ea]" : "bg-pink-400"}`}
+										/>
+									)}
+								</span>
+								<span className={`text-base ${isMale ? "text-blue-500" : "text-pink-400"}`} aria-hidden="true">
+									{isMale ? "♂" : "♀"}
+								</span>
+								{g}
+							</button>
+						);
+					})}
 				</div>
+			</div>
 
-				{/* Photo Uploads — exactly 2 required */}
-				<div className="space-y-3">
+			{/* ═══ Cat Photos ═══ */}
+			<div>
+				<div className="flex items-center justify-between mb-3">
 					<p className="text-sm font-bold text-gray-900">
-						Photos <span className="text-red-500">*</span>
+						Cat Photos <span className="text-red-500">*</span>
 						<span className="ml-2 text-xs font-normal text-gray-500">
-							(2 required)
+							(4 required, up to {MAX_IMAGES} total)
 						</span>
 					</p>
-					<PhotoSlotInput label="Front photo" slot="photo" preview={photoPreview} />
-					<PhotoSlotInput label="Side photo" slot="photo2" preview={photo2Preview} />
+					<span className="text-xs font-semibold text-[#4359ea]">
+						{images.filter((img) => img.file).length} / {images.length} uploaded
+					</span>
 				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					{images.map((img, idx) => (
+						<ImageUploadSlot
+							key={`img-${idx}-${img.description}`}
+							index={idx}
+							image={img}
+							isRequired={idx < REQUIRED_IMAGE_SLOTS.length}
+							onFileSet={setImageFile}
+							onRemove={removeImage}
+							onDescriptionChange={updateDescription}
+						/>
+					))}
+				</div>
+
+				{/* Add More button */}
+				{images.length < MAX_IMAGES && (
+					<button
+						type="button"
+						onClick={addOptionalSlot}
+						className="mt-3 flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 text-xs font-semibold hover:border-[#4359ea] hover:text-[#4359ea] hover:bg-[#4359ea]/5 transition-all w-full justify-center"
+					>
+						<Plus size={14} />
+						Add More Photos ({images.length}/{MAX_IMAGES})
+					</button>
+				)}
 			</div>
 		</>
 	);

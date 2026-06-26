@@ -1,16 +1,37 @@
 import type { CatGender } from "./cat";
 
 /* ================================================================
+   Image upload slot
+   ================================================================ */
+export interface CatImageUpload {
+	file: File | null;
+	preview: string | null;
+	/** Label for the image, e.g. "Muka", "Full Body Kiri" */
+	description: string;
+}
+
+/**
+ * Required image slots (4 mandatory uploads).
+ * The description is pre-set and cannot be edited.
+ */
+export const REQUIRED_IMAGE_SLOTS = [
+	{ description: "Muka" },
+	{ description: "Full Body Kiri" },
+	{ description: "Full Body Kanan" },
+	{ description: "Paw" },
+] as const;
+
+export const MAX_IMAGES = 10;
+
+/* ================================================================
    Step 1 – Basic Information
    ================================================================ */
 export interface BasicInfoData {
 	catName: string;
 	dateOfBirth: string; // ISO date string
 	gender: CatGender;
-	photo: File | null;
-	photoPreview: string | null;
-	photo2: File | null;
-	photo2Preview: string | null;
+	/** Array of image uploads – first 4 are required, rest optional */
+	images: CatImageUpload[];
 }
 
 /* ================================================================
@@ -165,14 +186,21 @@ export type StepKey = (typeof REGISTER_STEPS)[number]["key"];
 /* ================================================================
    Empty defaults
    ================================================================ */
+
+/** Create initial image slots: 4 required + 0 optional */
+function createInitialImages(): CatImageUpload[] {
+	return REQUIRED_IMAGE_SLOTS.map((slot) => ({
+		file: null,
+		preview: null,
+		description: slot.description,
+	}));
+}
+
 export const EMPTY_BASIC_INFO: BasicInfoData = {
 	catName: "",
 	dateOfBirth: "",
 	gender: "Male",
-	photo: null,
-	photoPreview: null,
-	photo2: null,
-	photo2Preview: null,
+	images: createInitialImages(),
 };
 
 export const EMPTY_BIO_PROFILE: BioProfileData = {
