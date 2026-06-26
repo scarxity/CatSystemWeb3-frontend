@@ -1,5 +1,5 @@
 {
-  "address": "A5NzuxFQmaH1mKM5BUfnj4CRBWMketRrqUsXXY9PCwVG",
+  "address": "BVY3yTGbWAfAdJW7UW8SrKiTY33SE8dUHez72fHrkBpD",
   "metadata": {
     "name": "cat_system",
     "version": "0.1.0",
@@ -8,39 +8,112 @@
   "instructions": [
     {
       "name": "add_cat_image",
-      "discriminator": [214, 248, 176, 56, 206, 109, 43, 155],
+      "discriminator": [
+        228,
+        119,
+        209,
+        97,
+        250,
+        142,
+        157,
+        164
+      ],
       "accounts": [
-        { "name": "cat", "writable": true },
+        {
+          "name": "cat",
+          "writable": true
+        },
         {
           "name": "cat_image",
           "writable": true,
           "pda": {
             "seeds": [
-              { "kind": "const", "value": [99,97,116,45,105,109,97,103,101] },
-              { "kind": "account", "path": "cat" },
-              { "kind": "account", "path": "cat.image_count", "account": "Cat" }
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  116,
+                  45,
+                  105,
+                  109,
+                  97,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "cat"
+              },
+              {
+                "kind": "account",
+                "path": "cat.image_count",
+                "account": "Cat"
+              }
             ]
           }
         },
-        { "name": "payer", "writable": true, "signer": true },
-        { "name": "system_program", "address": "11111111111111111111111111111111" }
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "image_url", "type": "string" },
-        { "name": "description", "type": "string" }
+        {
+          "name": "image_url",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
       ]
     },
     {
       "name": "create_cat",
-      "discriminator": [88, 26, 162, 225, 15, 216, 232, 10],
+      "discriminator": [
+        88,
+        26,
+        162,
+        225,
+        15,
+        216,
+        232,
+        10
+      ],
       "accounts": [
         {
           "name": "user_counter",
           "writable": true,
           "pda": {
             "seeds": [
-              { "kind": "const", "value": [117,115,101,114,95,99,111,117,110,116,101,114] },
-              { "kind": "account", "path": "owner" }
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
             ]
           }
         },
@@ -49,43 +122,184 @@
           "writable": true,
           "pda": {
             "seeds": [
-              { "kind": "const", "value": [99,97,116] },
-              { "kind": "account", "path": "owner" },
-              { "kind": "account", "path": "user_counter.cat_count", "account": "UserCounter" }
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "user_counter.cat_count",
+                "account": "UserCounter"
+              }
             ]
           }
         },
-        { "name": "owner", "writable": true, "signer": true },
-        { "name": "system_program", "address": "11111111111111111111111111111111" }
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
       ],
       "args": [
-        { "name": "name", "type": "string" },
-        { "name": "gender", "type": { "defined": { "name": "Gender" } } },
-        { "name": "date_of_birth", "type": "i64" },
-        { "name": "bio_profile", "type": { "defined": { "name": "BioProfile" } } }
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "gender",
+          "type": {
+            "defined": {
+              "name": "Gender"
+            }
+          }
+        },
+        {
+          "name": "date_of_birth",
+          "type": "i64"
+        },
+        {
+          "name": "bio_profile",
+          "type": {
+            "defined": {
+              "name": "BioProfile"
+            }
+          }
+        }
       ]
     }
   ],
   "accounts": [
-    { "name": "Cat", "discriminator": [90,224,21,36,170,145,105,45] },
-    { "name": "CatImage", "discriminator": [237,178,200,117,15,138,171,200] },
-    { "name": "UserCounter", "discriminator": [154,114,103,93,77,57,80,227] }
+    {
+      "name": "Cat",
+      "discriminator": [
+        90,
+        224,
+        21,
+        36,
+        170,
+        145,
+        105,
+        45
+      ]
+    },
+    {
+      "name": "CatImage",
+      "discriminator": [
+        151,
+        99,
+        43,
+        70,
+        152,
+        215,
+        183,
+        170
+      ]
+    },
+    {
+      "name": "UserCounter",
+      "discriminator": [
+        154,
+        114,
+        103,
+        93,
+        77,
+        57,
+        80,
+        227
+      ]
+    }
   ],
   "events": [
-    { "name": "CatCreated", "discriminator": [141,80,117,85,112,26,255,89] },
-    { "name": "CatImageAdded", "discriminator": [57,197,248,99,62,15,174,203] }
+    {
+      "name": "CatCreated",
+      "discriminator": [
+        141,
+        80,
+        117,
+        85,
+        112,
+        26,
+        255,
+        89
+      ]
+    },
+    {
+      "name": "CatImageAdded",
+      "discriminator": [
+        27,
+        246,
+        18,
+        132,
+        118,
+        158,
+        132,
+        67
+      ]
+    }
   ],
   "errors": [
-    { "code": 6000, "name": "NameTooLong", "msg": "Name must be 32 characters or less" },
-    { "code": 6001, "name": "DescriptionTooLong", "msg": "Description must be 512 characters or less" },
-    { "code": 6002, "name": "PersonalityTraitTooLong", "msg": "Personality trait must be 32 characters or less" },
-    { "code": 6003, "name": "BreedTooLong", "msg": "Breed must be 32 characters or less" },
-    { "code": 6004, "name": "CoatColorTooLong", "msg": "Coat color must be 32 characters or less" },
-    { "code": 6005, "name": "EyeColorTooLong", "msg": "Eye color must be 32 characters or less" },
-    { "code": 6006, "name": "ImageUrlTooLong", "msg": "Image URL must be 256 characters or less" },
-    { "code": 6007, "name": "ImageDescriptionTooLong", "msg": "Image description must be 64 characters or less" },
-    { "code": 6008, "name": "NotOwner", "msg": "Not the cat owner" },
-    { "code": 6009, "name": "ImageCountTooMany", "msg": "Too many cat images" }
+    {
+      "code": 6000,
+      "name": "NameTooLong",
+      "msg": "Name must be 32 characters or less"
+    },
+    {
+      "code": 6001,
+      "name": "DescriptionTooLong",
+      "msg": "Description must be 512 characters or less"
+    },
+    {
+      "code": 6002,
+      "name": "PersonalityTraitTooLong",
+      "msg": "Personality trait must be 32 characters or less"
+    },
+    {
+      "code": 6003,
+      "name": "BreedTooLong",
+      "msg": "Breed must be 32 characters or less"
+    },
+    {
+      "code": 6004,
+      "name": "CoatColorTooLong",
+      "msg": "Coat color must be 32 characters or less"
+    },
+    {
+      "code": 6005,
+      "name": "EyeColorTooLong",
+      "msg": "Eye color must be 32 characters or less"
+    },
+    {
+      "code": 6006,
+      "name": "ImageUrlTooLong",
+      "msg": "Image URL must be 256 characters or less"
+    },
+    {
+      "code": 6007,
+      "name": "ImageDescriptionTooLong",
+      "msg": "Image description must be 64 characters or less"
+    },
+    {
+      "code": 6008,
+      "name": "NotOwner",
+      "msg": "Not the cat owner"
+    },
+    {
+      "code": 6009,
+      "name": "ImageCountTooMany",
+      "msg": "Too many cat images"
+    }
   ],
   "types": [
     {
@@ -93,33 +307,111 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "breed", "type": "string" },
-          { "name": "coat_color", "type": "string" },
-          { "name": "coat_length", "type": { "defined": { "name": "CoatLength" } } },
-          { "name": "eye_color", "type": "string" },
-          { "name": "ear_type", "type": { "defined": { "name": "EarType" } } },
-          { "name": "body_size", "type": { "defined": { "name": "BodySize" } } },
-          { "name": "personality_trait", "type": "string" },
-          { "name": "description", "type": "string" }
+          {
+            "name": "breed",
+            "type": "string"
+          },
+          {
+            "name": "coat_color",
+            "type": "string"
+          },
+          {
+            "name": "coat_length",
+            "type": {
+              "defined": {
+                "name": "CoatLength"
+              }
+            }
+          },
+          {
+            "name": "eye_color",
+            "type": "string"
+          },
+          {
+            "name": "ear_type",
+            "type": {
+              "defined": {
+                "name": "EarType"
+              }
+            }
+          },
+          {
+            "name": "body_size",
+            "type": {
+              "defined": {
+                "name": "BodySize"
+              }
+            }
+          },
+          {
+            "name": "personality_trait",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
         ]
       }
     },
     {
       "name": "BodySize",
-      "type": { "kind": "enum", "variants": [{ "name": "Small" }, { "name": "Medium" }, { "name": "Large" }] }
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Small"
+          },
+          {
+            "name": "Medium"
+          },
+          {
+            "name": "Large"
+          }
+        ]
+      }
     },
     {
       "name": "Cat",
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "owner", "type": "pubkey" },
-          { "name": "bump", "type": "u8" },
-          { "name": "name", "type": "string" },
-          { "name": "gender", "type": { "defined": { "name": "Gender" } } },
-          { "name": "date_of_birth", "type": "i64" },
-          { "name": "bio_profile", "type": { "defined": { "name": "BioProfile" } } },
-          { "name": "image_count", "type": "u8" }
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "type": {
+              "defined": {
+                "name": "Gender"
+              }
+            }
+          },
+          {
+            "name": "date_of_birth",
+            "type": "i64"
+          },
+          {
+            "name": "bio_profile",
+            "type": {
+              "defined": {
+                "name": "BioProfile"
+              }
+            }
+          },
+          {
+            "name": "image_count",
+            "type": "u8"
+          }
         ]
       }
     },
@@ -128,14 +420,46 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "cat", "type": "pubkey" },
-          { "name": "owner", "type": "pubkey" },
-          { "name": "cat_index", "type": "u64" },
-          { "name": "name", "type": "string" },
-          { "name": "gender", "type": { "defined": { "name": "Gender" } } },
-          { "name": "date_of_birth", "type": "i64" },
-          { "name": "bio_profile", "type": { "defined": { "name": "BioProfile" } } },
-          { "name": "timestamp", "type": "i64" }
+          {
+            "name": "cat",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "cat_index",
+            "type": "u64"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "type": {
+              "defined": {
+                "name": "Gender"
+              }
+            }
+          },
+          {
+            "name": "date_of_birth",
+            "type": "i64"
+          },
+          {
+            "name": "bio_profile",
+            "type": {
+              "defined": {
+                "name": "BioProfile"
+              }
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
         ]
       }
     },
@@ -144,11 +468,26 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "cat", "type": "pubkey" },
-          { "name": "bump", "type": "u8" },
-          { "name": "index", "type": "u8" },
-          { "name": "image_url", "type": "string" },
-          { "name": "description", "type": "string" }
+          {
+            "name": "cat",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "index",
+            "type": "u8"
+          },
+          {
+            "name": "image_url",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
         ]
       }
     },
@@ -157,29 +496,88 @@
       "type": {
         "kind": "struct",
         "fields": [
-          { "name": "cat", "type": "pubkey" },
-          { "name": "image_pda", "type": "pubkey" },
-          { "name": "index", "type": "u8" },
-          { "name": "image_url", "type": "string" },
-          { "name": "description", "type": "string" }
+          {
+            "name": "cat",
+            "type": "pubkey"
+          },
+          {
+            "name": "image_pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u8"
+          },
+          {
+            "name": "image_url",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
         ]
       }
     },
     {
       "name": "CoatLength",
-      "type": { "kind": "enum", "variants": [{ "name": "Short" }, { "name": "Medium" }, { "name": "Long" }] }
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Short"
+          },
+          {
+            "name": "Medium"
+          },
+          {
+            "name": "Long"
+          }
+        ]
+      }
     },
     {
       "name": "EarType",
-      "type": { "kind": "enum", "variants": [{ "name": "Pointed" }, { "name": "Rounded" }, { "name": "Folded" }] }
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pointed"
+          },
+          {
+            "name": "Rounded"
+          },
+          {
+            "name": "Folded"
+          }
+        ]
+      }
     },
     {
       "name": "Gender",
-      "type": { "kind": "enum", "variants": [{ "name": "Male" }, { "name": "Female" }] }
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Male"
+          },
+          {
+            "name": "Female"
+          }
+        ]
+      }
     },
     {
       "name": "UserCounter",
-      "type": { "kind": "struct", "fields": [{ "name": "cat_count", "type": "u64" }] }
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cat_count",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ]
 }
