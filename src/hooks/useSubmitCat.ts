@@ -9,7 +9,7 @@ import { BN } from "@coral-xyz/anchor";
 import { useRegisterCat } from "@/components/pages/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
 import api from "@/lib/api";
-import type { BioProfileData } from "@/types/registerCat";
+import { REQUIRED_IMAGE_SLOTS, type BioProfileData, type CatImageUpload } from "@/types/registerCat";
 
 function toGender(val: string) {
   return val === "Female" ? { female: {} } : { male: {} };
@@ -44,16 +44,22 @@ function composeDescription(bio: BioProfileData): string {
     .slice(0, 512);
 }
 
-async function uploadCatImages(photo1: File, photo2: File) {
+/** Upload all cat images at once, returns array of { url, filename } */
+async function uploadCatImages(images: CatImageUpload[]) {
+  const filesWithData = images.filter((img) => img.file != null);
+  if (filesWithData.length === 0) return [];
+
   const fd = new FormData();
-  fd.append("images", photo1);
-  fd.append("images", photo2);
-  const { data } = await api.post<{ image_url_1: string; image_url_2: string }>(
+  for (const img of filesWithData) {
+    fd.append("images", img.file!);
+  }
+
+  const { data } = await api.post<{ images: { url: string; filename: string }[] }>(
     "/cats/images",
     fd,
     { headers: { "Content-Type": "multipart/form-data" } },
   );
-  return data;
+  return data.images;
 }
 
 export function useSubmitCat() {
@@ -70,20 +76,26 @@ export function useSubmitCat() {
     }
 
     const { basicInfo, bioProfile } = formData;
-    if (!basicInfo.photo || !basicInfo.photo2) {
-      toast.error("Please upload both cat photos before submitting.");
+
+    // Validate required images (first 4 slots must have files)
+    const requiredImages = basicInfo.images.slice(0, REQUIRED_IMAGE_SLOTS.length);
+    const missingRequired = requiredImages.filter((img) => !img.file);
+    if (missingRequired.length > 0) {
+      toast.error(
+        `Please upload all required photos: ${missingRequired.map((img) => img.description).join(", ")}`,
+      );
       return;
     }
 
+    // Filter to only images that have files
+    const imagesToUpload = basicInfo.images.filter((img) => img.file != null);
+
     setIsSubmitting(true);
 
-    // Step 1: upload images. If this fails, no on-chain tx fires.
-    let imageUrl1: string;
-    let imageUrl2: string;
+    // Step 1: upload images to backend
+    let uploadedUrls: { url: string; filename: string }[];
     try {
-      const uploaded = await uploadCatImages(basicInfo.photo, basicInfo.photo2);
-      imageUrl1 = uploaded.image_url_1;
-      imageUrl2 = uploaded.image_url_2;
+      uploadedUrls = await uploadCatImages(imagesToUpload);
     } catch (err) {
       console.error("[register] image upload failed:", err);
       toast.error("Image upload failed. Please try again.");
@@ -91,7 +103,8 @@ export function useSubmitCat() {
       return;
     }
 
-    // Step 2: on-chain create_cat with the URLs as args
+    // Step 2: on-chain create_cat
+    let catPda: PublicKey;
     try {
       const program = createCatProgram(wallet);
       const ownerPubkey = new PublicKey(wallet.address);
@@ -112,7 +125,7 @@ export function useSubmitCat() {
         // account doesn't exist yet (first registration)
       }
 
-      const [catPda] = PublicKey.findProgramAddressSync(
+      [catPda] = PublicKey.findProgramAddressSync(
         [
           Buffer.from("cat"),
           ownerPubkey.toBuffer(),
@@ -121,19 +134,29 @@ export function useSubmitCat() {
         program.programId,
       );
 
+      // Convert dateOfBirth to unix timestamp (seconds)
+      const dobTimestamp = basicInfo.dateOfBirth
+        ? new BN(Math.floor(new Date(basicInfo.dateOfBirth).getTime() / 1000))
+        : new BN(0);
+
+      // Build the BioProfile struct for on-chain
+      const bioProfileArg = {
+        breed: bioProfile.breed.slice(0, 32),
+        coatColor: bioProfile.coatColor.slice(0, 32),
+        coatLength: toCoatLength(bioProfile.coatLength),
+        eyeColor: bioProfile.eyeColor.slice(0, 32),
+        earType: toEarType(bioProfile.earType),
+        bodySize: toBodySize(bioProfile.bodySize),
+        personalityTrait: (bioProfile.personalityTraits[0] || "").slice(0, 32),
+        description: composeDescription(bioProfile),
+      };
+
       await program.methods
         .createCat(
           basicInfo.catName.slice(0, 32),
           toGender(basicInfo.gender),
-          bioProfile.breed.slice(0, 32),
-          bioProfile.coatColor.slice(0, 32),
-          toCoatLength(bioProfile.coatLength),
-          bioProfile.eyeColor.slice(0, 32),
-          toEarType(bioProfile.earType),
-          toBodySize(bioProfile.bodySize),
-          composeDescription(bioProfile),
-          imageUrl1,
-          imageUrl2,
+          dobTimestamp,
+          bioProfileArg,
         )
         .accounts({
           owner: wallet.address,
@@ -143,13 +166,58 @@ export function useSubmitCat() {
         .rpc();
 
       toast.success("Cat registered on-chain!");
+    } catch (err) {
+      console.error("[register] on-chain create_cat failed:", err);
+      toast.error("Cat registration failed. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Step 3: on-chain add_cat_image × N
+    try {
+      const program = createCatProgram(wallet);
+
+      for (let i = 0; i < uploadedUrls.length; i++) {
+        const uploaded = uploadedUrls[i];
+        const imgDescription = imagesToUpload[i]?.description || "";
+
+        // Fetch current image_count from the cat account
+        // biome-ignore lint/suspicious/noExplicitAny: Anchor generic Idl type
+        const catAccount = await (program.account as any).cat.fetch(catPda);
+        const imageCount = catAccount.imageCount as number;
+
+        const [catImagePda] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("cat-image"),
+            catPda.toBuffer(),
+            Buffer.from([imageCount]),
+          ],
+          program.programId,
+        );
+
+        await program.methods
+          .addCatImage(
+            uploaded.url.slice(0, 256),
+            imgDescription.slice(0, 64),
+          )
+          .accounts({
+            cat: catPda,
+            catImage: catImagePda,
+            payer: wallet.address,
+          })
+          .rpc();
+
+        toast.success(`Image ${i + 1}/${uploadedUrls.length} uploaded on-chain`);
+      }
+
+      toast.success("All images registered! 🎉");
       router.push("/");
     } catch (err) {
-      console.error(
-        `[register] on-chain tx failed. Orphan uploads: ${imageUrl1}, ${imageUrl2}`,
-        err,
+      console.error("[register] on-chain add_cat_image failed:", err);
+      toast.error(
+        "Some images failed to register on-chain. The cat was created successfully — you can add images later.",
       );
-      toast.error("Registration failed. Please try again.");
+      router.push("/");
     } finally {
       setIsSubmitting(false);
     }
