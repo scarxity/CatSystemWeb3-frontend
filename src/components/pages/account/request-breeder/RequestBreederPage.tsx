@@ -120,12 +120,12 @@ export default function RequestBreederPage() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!file) return;
-		const MAX_SIZE_MB = 5;
+		const MAX_SIZE_MB = 10;
 		if (file.size > MAX_SIZE_MB * 1024 * 1024) {
 			alert(`File size must be under ${MAX_SIZE_MB} MB.`);
 			return;
 		}
-		requestBreederMutation.mutate();
+		requestBreederMutation.mutate(file);
 	};
 
 	const fileSizeMB = file ? (file.size / 1024 / 1024).toFixed(2) : "0";
@@ -201,7 +201,7 @@ export default function RequestBreederPage() {
 						<div className="flex gap-2 rounded-2xl border border-amber-100 bg-amber-50 p-4">
 							<AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
 							<p className="text-xs text-amber-700 leading-relaxed">
-								You must upload a valid government-issued ID or professional certificate. File must be under 5 MB.
+								You must upload a valid government-issued ID or professional certificate in PDF format. File must be under 10 MB.
 							</p>
 						</div>
 					</aside>
@@ -234,7 +234,7 @@ export default function RequestBreederPage() {
 								<div>
 									<h3 className="text-base font-bold text-gray-900">Upload Verification Document</h3>
 									<p className="mt-1 text-sm text-gray-500">
-										Accepted formats: JPG, PNG, PDF &mdash; max 5 MB.
+										Accepted format: PDF only &mdash; max 10 MB.
 									</p>
 								</div>
 
@@ -261,7 +261,7 @@ export default function RequestBreederPage() {
 										ref={fileInputRef}
 										onChange={handleFileChange}
 										className="hidden"
-										accept=".jpg,.jpeg,.png,.pdf"
+										accept=".pdf,application/pdf"
 									/>
 
 									{!file ? (
@@ -274,7 +274,7 @@ export default function RequestBreederPage() {
 												<p className="text-sm font-semibold text-gray-700">
 													{isDragging ? "Drop your file here" : "Click to upload or drag & drop"}
 												</p>
-												<p className="text-xs text-gray-400 mt-0.5">JPG, PNG or PDF (max. 5 MB)</p>
+												<p className="text-xs text-gray-400 mt-0.5">PDF only (max. 10 MB)</p>
 											</div>
 										</div>
 									) : (

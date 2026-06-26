@@ -9,8 +9,12 @@ export const useRequestBreeder = () => {
 	const user = useAuthStore.useUser();
 
 	return useMutation({
-		mutationFn: async () => {
-			const { data } = await api.post("/users/request-breeder");
+		mutationFn: async (file: File) => {
+			const fd = new FormData();
+			fd.append("document", file);
+			const { data } = await api.post("/users/request-breeder", fd, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
 			return data;
 		},
 		onSuccess: () => {
