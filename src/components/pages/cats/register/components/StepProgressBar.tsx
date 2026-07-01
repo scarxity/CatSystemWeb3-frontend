@@ -1,6 +1,6 @@
 "use client";
 
-import { TOTAL_STEPS } from "@/types/registerCat";
+import { useRegisterCat } from "../context/RegisterCatContext";
 
 interface StepProgressBarProps {
 	/** 0-based step index */
@@ -8,8 +8,9 @@ interface StepProgressBarProps {
 }
 
 export default function StepProgressBar({ stepIndex }: StepProgressBarProps) {
+	const { totalVisibleSteps } = useRegisterCat();
 	const currentNumber = stepIndex + 1;
-	const progress = Math.round((currentNumber / TOTAL_STEPS) * 100);
+	const progress = Math.round((currentNumber / totalVisibleSteps) * 100);
 
 	return (
 		<div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
@@ -18,7 +19,7 @@ export default function StepProgressBar({ stepIndex }: StepProgressBarProps) {
 					{progress}%
 				</span>
 				<span className="text-gray-500 font-semibold text-sm">
-					{currentNumber} / {TOTAL_STEPS}
+					{currentNumber} / {totalVisibleSteps}
 				</span>
 			</div>
 			<div className="h-2 bg-gray-100 rounded-full overflow-hidden">

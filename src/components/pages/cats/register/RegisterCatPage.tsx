@@ -36,8 +36,8 @@ const MOBILE_STEPS = [
 ];
 
 function MobileStepRouter() {
-	const { currentStep } = useRegisterCat();
-	const StepComponent = MOBILE_STEPS[currentStep];
+	const { actualStepIndex } = useRegisterCat();
+	const StepComponent = MOBILE_STEPS[actualStepIndex];
 	if (!StepComponent) return null;
 	return <StepComponent />;
 }
@@ -46,7 +46,7 @@ function MobileStepRouter() {
    Desktop — Step stepper sidebar (left column)
 ────────────────────────────────────────────────────────────── */
 function DesktopStepper() {
-	const { currentStep, goToStep } = useRegisterCat();
+	const { currentStep, goToStep, visibleSteps } = useRegisterCat();
 
 	return (
 		<aside className="w-[220px] xl:w-[260px] shrink-0">
@@ -60,7 +60,7 @@ function DesktopStepper() {
 
 				{/* Step list */}
 				<nav className="flex flex-col gap-1" aria-label="Registration steps">
-					{REGISTER_STEPS.map((step, idx) => {
+					{visibleSteps.map((step, idx) => {
 						const isCompleted = idx < currentStep;
 						const isCurrent = idx === currentStep;
 						const isUpcoming = idx > currentStep;
@@ -92,7 +92,7 @@ function DesktopStepper() {
 												: "bg-gray-100 text-gray-300",
 									].join(" ")}
 								>
-									{isCompleted ? <CheckCircle2 size={13} /> : step.number}
+									{isCompleted ? <CheckCircle2 size={13} /> : idx + 1}
 								</span>
 
 								{/* Label */}
@@ -114,14 +114,14 @@ function DesktopStepper() {
 					<div className="flex justify-between text-[11px] font-semibold mb-1.5">
 						<span className="text-gray-400">Overall</span>
 						<span className="text-[#4359ea]">
-							{currentStep + 1} / {REGISTER_STEPS.length}
+							{currentStep + 1} / {visibleSteps.length}
 						</span>
 					</div>
 					<div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
 						<div
 							className="h-full bg-gradient-to-r from-[#4359ea] to-[#7c5cfc] rounded-full transition-all duration-500"
 							style={{
-								width: `${Math.round(((currentStep + 1) / REGISTER_STEPS.length) * 100)}%`,
+								width: `${Math.round(((currentStep + 1) / visibleSteps.length) * 100)}%`,
 							}}
 						/>
 					</div>
@@ -136,10 +136,9 @@ function DesktopStepper() {
 ────────────────────────────────────────────────────────────── */
 function DesktopNavButtons() {
 	const router = useRouter();
-	const { goNext, goBack, isFirstStep, isLastStep, currentStep } = useRegisterCat();
+	const { goNext, goBack, isFirstStep, isLastStep, actualStepIndex, canProceed } = useRegisterCat();
 	const { handleSubmit, isSubmitting } = useSubmitCat();
-	// Family Tree (step 5) is optional
-	const showSkip = currentStep === 5;
+	const showSkip = actualStepIndex === 5;
 
 	const handleNext = async () => {
 		if (isLastStep) {
@@ -183,7 +182,7 @@ function DesktopNavButtons() {
 				<button
 					type="button"
 					onClick={handleNext}
-					disabled={isSubmitting}
+					disabled={isSubmitting || !canProceed}
 					className="flex items-center justify-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] text-white text-sm font-bold shadow-lg shadow-[#4359ea]/30 active:scale-[0.98] transition-all min-w-[130px] disabled:opacity-70 disabled:cursor-not-allowed"
 				>
 					{isLastStep ? (
@@ -214,9 +213,9 @@ const DESKTOP_FIELDS = [
 ];
 
 function DesktopFormPanel() {
-	const { currentStep } = useRegisterCat();
-	const step = REGISTER_STEPS[currentStep];
-	const FieldsComponent = DESKTOP_FIELDS[currentStep];
+	const { currentStep, actualStepIndex, visibleSteps } = useRegisterCat();
+	const step = visibleSteps[currentStep];
+	const FieldsComponent = DESKTOP_FIELDS[actualStepIndex];
 	if (!FieldsComponent || !step) return null;
 
 	return (
@@ -236,7 +235,7 @@ function DesktopFormPanel() {
 				</div>
 
 				{/* Active step fields */}
-				<div key={currentStep}>
+				<div key={actualStepIndex}>
 					<FieldsComponent />
 				</div>
 
@@ -252,6 +251,8 @@ function DesktopFormPanel() {
    The app's sidebar navbar is already rendered by Layout.tsx.
 ────────────────────────────────────────────────────────────── */
 function DesktopLayout() {
+	const { totalVisibleSteps } = useRegisterCat();
+	
 	return (
 		<div className="px-6 xl:px-10 py-8">
 			{/* Page title */}
@@ -266,7 +267,7 @@ function DesktopLayout() {
 				<div>
 					<h2 className="text-xl font-extrabold text-gray-900">Register Your Cat</h2>
 					<p className="text-sm text-gray-400 mt-1">
-						Complete all 6 steps to register your cat on OLPaw.
+						Complete all {totalVisibleSteps} steps to register your cat on OLPaw.
 					</p>
 				</div>
 			</div>

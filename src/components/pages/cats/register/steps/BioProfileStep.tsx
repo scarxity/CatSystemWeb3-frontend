@@ -326,7 +326,7 @@ export function BioProfileFields() {
    FULL SCREEN — mobile / tablet view
    ================================================================ */
 export default function BioProfileStep() {
-	const { currentStep, goNext, goBack, isFirstStep, isLastStep } = useRegisterCat();
+	const { currentStep, goNext, goBack, isFirstStep, isLastStep, canProceed } = useRegisterCat();
 
 	return (
 		<div className="min-h-screen flex flex-col bg-gray-50">
@@ -346,6 +346,7 @@ export default function BioProfileStep() {
 				onNext={goNext}
 				isFirstStep={isFirstStep}
 				isLastStep={isLastStep}
+				canProceed={canProceed}
 			/>
 		</div>
 	);
