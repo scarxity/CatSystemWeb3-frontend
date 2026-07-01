@@ -1,16 +1,21 @@
 "use client";
 
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
 	Cat,
 	ChevronDown,
 	Eye,
 	FileText,
 	Heart,
+	Loader2,
 	Palette,
 	Ruler,
 	Scissors,
+	Search,
+	X,
 	Activity
 } from "lucide-react";
+import { useGetBreeds } from "@/hooks/useGetBreeds";
 import { useRegisterCat } from "../context/RegisterCatContext";
 import StepHeader from "../components/StepHeader";
 import StepNavButtons from "../components/StepNavButtons";
@@ -101,6 +106,45 @@ const RadioGroup = ({
 export function BioProfileFields() {
 	const { formData, updateBioProfile } = useRegisterCat();
 	const bio = formData.bioProfile;
+	const { data: breeds, isLoading: breedsLoading, isError: breedsError } = useGetBreeds();
+
+	/* ── Breed combobox state ── */
+	const [breedSearch, setBreedSearch] = useState("");
+	const [breedOpen, setBreedOpen] = useState(false);
+	const breedRef = useRef<HTMLDivElement>(null);
+
+	// Close dropdown on outside click
+	useEffect(() => {
+		const handler = (e: MouseEvent) => {
+			if (breedRef.current && !breedRef.current.contains(e.target as Node)) {
+				setBreedOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handler);
+		return () => document.removeEventListener("mousedown", handler);
+	}, []);
+
+	const filteredBreeds = (breeds ?? []).filter((b) => {
+		const q = breedSearch.toLowerCase();
+		return (
+			b.name.toLowerCase().includes(q) ||
+			(b.name_long && b.name_long.toLowerCase().includes(q))
+		);
+	});
+
+	const selectBreed = useCallback(
+		(name: string) => {
+			updateBioProfile({ breed: name });
+			setBreedSearch("");
+			setBreedOpen(false);
+		},
+		[updateBioProfile],
+	);
+
+	const clearBreed = useCallback(() => {
+		updateBioProfile({ breed: "" });
+		setBreedSearch("");
+	}, [updateBioProfile]);
 
 	const togglePersonality = (trait: string) => {
 		const current = bio.personalityTraits;
@@ -125,25 +169,106 @@ export function BioProfileFields() {
 						1. Breed
 					</span>
 				</div>
-				<div className="relative flex-1 w-full">
-					<select
-						value={bio.breed}
-						onChange={(e) => updateBioProfile({ breed: e.target.value })}
-						className="w-full h-11 px-3 pr-10 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4359ea]/30 focus:border-[#4359ea] transition-all appearance-none cursor-pointer"
-					>
-						<option value="">Select breed</option>
-						<option value="Maine Coon">Maine Coon</option>
-						<option value="Persian">Persian</option>
-						<option value="Siamese">Siamese</option>
-						<option value="British Shorthair">British Shorthair</option>
-						<option value="Ragdoll">Ragdoll</option>
-						<option value="Bengal">Bengal</option>
-						<option value="Domestic Shorthair">Domestic Shorthair</option>
-						<option value="Other">Other</option>
-					</select>
-					<div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-						<ChevronDown size={16} className="text-gray-400" />
-					</div>
+				<div className="relative flex-1 w-full" ref={breedRef}>
+					{/* Selected breed chip OR search input */}
+					{bio.breed && !breedOpen ? (
+						<div className="w-full h-11 px-3 pr-10 rounded-xl border border-gray-200 bg-white flex items-center gap-2">
+							<span className="text-sm text-gray-900 flex-1 truncate">
+								{bio.breed}
+							</span>
+							<button
+								type="button"
+								onClick={clearBreed}
+								className="w-5 h-5 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shrink-0"
+							>
+								<X size={12} className="text-gray-500" />
+							</button>
+							<button
+								type="button"
+								onClick={() => setBreedOpen(true)}
+								className="shrink-0"
+							>
+								<ChevronDown size={16} className="text-gray-400" />
+							</button>
+						</div>
+					) : (
+						<div className="relative">
+							<div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+								{breedsLoading ? (
+									<Loader2 size={16} className="text-gray-300 animate-spin" />
+								) : (
+									<Search size={16} className="text-gray-300" />
+								)}
+							</div>
+							<input
+								type="text"
+								value={breedSearch}
+								onChange={(e) => {
+									setBreedSearch(e.target.value);
+									setBreedOpen(true);
+								}}
+								onFocus={() => setBreedOpen(true)}
+								disabled={breedsLoading}
+								placeholder={
+									breedsLoading
+										? "Loading breeds..."
+										: breedsError
+											? "Failed to load breeds"
+											: "Choose your cat's breed"
+								}
+								className={[
+									"w-full h-11 pl-9 pr-10 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#4359ea]/30 focus:border-[#4359ea] transition-all",
+									breedSearch ? "text-gray-900" : "text-gray-900",
+									"placeholder:text-gray-300",
+									breedsLoading ? "opacity-50 cursor-wait" : "",
+								].join(" ")}
+							/>
+							<div className="absolute inset-y-0 right-3 flex items-center">
+								<button
+									type="button"
+									onClick={() => setBreedOpen(!breedOpen)}
+									className="p-0.5"
+								>
+									<ChevronDown
+										size={16}
+										className={[
+											"text-gray-400 transition-transform",
+											breedOpen ? "rotate-180" : "",
+										].join(" ")}
+									/>
+								</button>
+							</div>
+						</div>
+					)}
+
+					{/* Dropdown */}
+					{breedOpen && !breedsLoading && (
+						<div className="absolute z-50 mt-1 w-full max-h-52 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg py-1">
+							{filteredBreeds.length === 0 ? (
+								<div className="px-3 py-3 text-sm text-gray-400 text-center">
+									No breeds found
+								</div>
+							) : (
+								filteredBreeds.map((breed) => (
+									<button
+										key={breed.id}
+										type="button"
+										onClick={() => selectBreed(breed.name)}
+										className={[
+											"w-full text-left px-3 py-2 text-sm transition-colors",
+											bio.breed === breed.name
+												? "bg-[#4359ea]/10 text-[#4359ea] font-semibold"
+												: "text-gray-700 hover:bg-gray-50",
+										].join(" ")}
+									>
+										{breed.name_long
+											? `${breed.name} (${breed.name_long})`
+											: breed.name}
+									</button>
+								))
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 
