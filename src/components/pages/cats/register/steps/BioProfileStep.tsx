@@ -261,9 +261,7 @@ export function BioProfileFields() {
 												: "text-gray-700 hover:bg-gray-50",
 										].join(" ")}
 									>
-										{breed.name_long
-											? `${breed.name} (${breed.name_long})`
-											: breed.name}
+										{breed.name}
 									</button>
 								))
 							)}
