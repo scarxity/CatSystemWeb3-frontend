@@ -37,14 +37,55 @@ export interface BasicInfoData {
 /* ================================================================
    Step 2 – Bio Profile
    ================================================================ */
+/**
+ * IDL enums – these match the Anchor enum variant names exactly.
+ * Using string unions keeps the form type-safe while staying
+ * serialisable and easy to map to Anchor objects ({ variant: {} }).
+ */
+export type PatternCategory = "Tabby" | "Solid" | "Bicolor" | "Special";
+export type VisualPattern = "Mackerel" | "Classic" | "Solid";
+export type PatternColor = "Hitam" | "Abu" | "Orange" | "Putih";
+export type CoatLength = "Short" | "Medium" | "Long";
+export type EarType = "Pointed" | "Rounded" | "Folded";
+export type BodySize = "Small" | "Medium" | "Large" | "VeryLarge";
+export type BodyType = "Oriental" | "Muscular" | "Lean" | "Ideal" | "Stocky" | "Overweight";
+export type BloodType = "A" | "B" | "AB";
+export type Temperament = "Friendly" | "Aggressive" | "Calm";
+export type EnergyLevel = "Low" | "Calm" | "Balanced" | "Active" | "Hyper";
+export type SocialBehavior = "Friendly" | "Playful" | "Independent" | "GoodWithCat" | "Vocal";
+
+export interface PatternTypeData {
+	category: PatternCategory | "";
+	visualPattern: VisualPattern | "";
+	color: PatternColor | "";
+}
+
 export interface BioProfileData {
-	breed: string;
-	coatColor: string;
-	coatLength: "Long Hair" | "Medium Hair" | "Short Hair" | "";
+	/** Multiselect – max 32 chars when joined for on-chain */
+	breed: string[];
+	/** Multiselect – max 32 chars when joined for on-chain */
+	coatColor: string[];
+	/** Struct with 3 enum sub-fields */
+	patternType: PatternTypeData;
+	coatLength: CoatLength | "";
+	/** max 32 chars */
 	eyeColor: string;
-	earType: "Pointed" | "Rounded" | "Folded" | "";
-	bodySize: "Small" | "Medium" | "Large" | "";
-	personalityTraits: string[];
+	earType: EarType | "";
+	bodySize: BodySize | "";
+	bodyType: BodyType | "";
+	/** max 128 chars */
+	distinctiveMarks: string;
+	bloodType: BloodType | "";
+	temperament: Temperament | "";
+	energyLevel: EnergyLevel | "";
+	socialBehavior: SocialBehavior | "";
+	/** max 64 chars */
+	specialSkill: string;
+	/** max 128 chars */
+	likes: string;
+	/** max 128 chars */
+	dislikes: string;
+	/** max 256 chars */
 	additionalNotes: string;
 }
 
@@ -171,12 +212,42 @@ export interface RegisterCatFormData {
    Step configuration
    ================================================================ */
 export const REGISTER_STEPS = [
-	{ key: "basicInfo", number: 1, title: "Basic Information", subtitle: "Tell us about your cat" },
-	{ key: "bioProfile", number: 2, title: "Bio Profile", subtitle: "Tell us more about your cat" },
-	{ key: "dnaProfile", number: 3, title: "DNA Profile", subtitle: "Genetic information (optional)" },
-	{ key: "healthReport", number: 4, title: "Health Report", subtitle: "Help us keep your cat healthy and safe" },
-	{ key: "ownerData", number: 5, title: "Owner Data", subtitle: "Your contact & ownership info" },
-	{ key: "familyTree", number: 6, title: "Family Tree", subtitle: "Build your cat's family lineage" },
+	{
+		key: "basicInfo",
+		number: 1,
+		title: "Basic Information",
+		subtitle: "Tell us about your cat",
+	},
+	{
+		key: "bioProfile",
+		number: 2,
+		title: "Bio Profile",
+		subtitle: "Tell us more about your cat",
+	},
+	{
+		key: "dnaProfile",
+		number: 3,
+		title: "DNA Profile",
+		subtitle: "Genetic information (optional)",
+	},
+	{
+		key: "healthReport",
+		number: 4,
+		title: "Health Report",
+		subtitle: "Help us keep your cat healthy and safe",
+	},
+	{
+		key: "ownerData",
+		number: 5,
+		title: "Owner Data",
+		subtitle: "Your contact & ownership info",
+	},
+	{
+		key: "familyTree",
+		number: 6,
+		title: "Family Tree",
+		subtitle: "Build your cat's family lineage",
+	},
 ] as const;
 
 export const TOTAL_STEPS = REGISTER_STEPS.length;
@@ -204,13 +275,22 @@ export const EMPTY_BASIC_INFO: BasicInfoData = {
 };
 
 export const EMPTY_BIO_PROFILE: BioProfileData = {
-	breed: "",
-	coatColor: "",
+	breed: [],
+	coatColor: [],
+	patternType: { category: "", visualPattern: "", color: "" },
 	coatLength: "",
 	eyeColor: "",
 	earType: "",
 	bodySize: "",
-	personalityTraits: [],
+	bodyType: "",
+	distinctiveMarks: "",
+	bloodType: "",
+	temperament: "",
+	energyLevel: "",
+	socialBehavior: "",
+	specialSkill: "",
+	likes: "",
+	dislikes: "",
 	additionalNotes: "",
 };
 

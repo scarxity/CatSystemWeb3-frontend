@@ -548,6 +548,7 @@ export default function FamilyTreeStep() {
 		goBack,
 		isFirstStep,
 		isLastStep,
+		canProceed,
 	} = useRegisterCat();
 	const { handleSubmit, isSubmitting } = useSubmitCat();
 
@@ -575,6 +576,7 @@ export default function FamilyTreeStep() {
 				onSkip={handleSkip}
 				nextLabel="Submit"
 				isLoading={isSubmitting}
+				canProceed={canProceed}
 			/>
 		</div>
 	);

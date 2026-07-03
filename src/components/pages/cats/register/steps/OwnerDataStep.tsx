@@ -269,6 +269,7 @@ export default function OwnerDataStep() {
 		goBack,
 		isFirstStep,
 		isLastStep,
+		canProceed,
 	} = useRegisterCat();
 
 	return (
@@ -287,6 +288,7 @@ export default function OwnerDataStep() {
 				onNext={goNext}
 				isFirstStep={isFirstStep}
 				isLastStep={isLastStep}
+				canProceed={canProceed}
 			/>
 		</div>
 	);

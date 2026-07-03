@@ -523,7 +523,7 @@ export function HealthReportFields() {
    FULL SCREEN — mobile / tablet view
    ================================================================ */
 export default function HealthReportStep() {
-	const { currentStep, goNext, goBack, isFirstStep, isLastStep } = useRegisterCat();
+	const { currentStep, goNext, goBack, isFirstStep, isLastStep, canProceed } = useRegisterCat();
 
 	return (
 		<div className="min-h-screen flex flex-col bg-gray-50">
@@ -541,6 +541,7 @@ export default function HealthReportStep() {
 				onNext={goNext}
 				isFirstStep={isFirstStep}
 				isLastStep={isLastStep}
+				canProceed={canProceed}
 			/>
 		</div>
 	);

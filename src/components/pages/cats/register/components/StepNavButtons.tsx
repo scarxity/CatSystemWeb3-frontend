@@ -19,6 +19,8 @@ interface StepNavButtonsProps {
 	nextLabel?: string;
 	/** Shows a spinner and disables buttons while true */
 	isLoading?: boolean;
+	/** Whether the user can proceed (all required fields filled) */
+	canProceed?: boolean;
 }
 
 export default function StepNavButtons({
@@ -30,6 +32,7 @@ export default function StepNavButtons({
 	showSkip = false,
 	nextLabel,
 	isLoading = false,
+	canProceed = true,
 }: StepNavButtonsProps) {
 	const label = nextLabel ?? (isLastStep ? "Submit" : "Next");
 
@@ -72,7 +75,7 @@ export default function StepNavButtons({
 				<button
 					type="button"
 					onClick={onNext}
-					disabled={isLoading}
+					disabled={isLoading || !canProceed}
 					className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#4359ea] to-[#5b35d4] hover:from-[#3348d4] hover:to-[#4a2bbd] active:scale-[0.98] py-3 text-white font-bold text-sm shadow-lg shadow-[#4359ea]/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
 				>
 					{isLoading && isLastStep ? (

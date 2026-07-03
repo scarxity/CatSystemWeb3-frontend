@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { REGISTER_STEPS } from "@/types/registerCat";
+import { useRegisterCat } from "../context/RegisterCatContext";
 
 /* ──────────────────────────────────────────────
    Paw print SVG (decorative)
@@ -48,7 +48,8 @@ interface StepHeaderProps {
    Component
 ────────────────────────────────────────────── */
 export default function StepHeader({ stepIndex, onBack }: StepHeaderProps) {
-	const step = REGISTER_STEPS[stepIndex];
+	const { visibleSteps } = useRegisterCat();
+	const step = visibleSteps[stepIndex];
 	if (!step) return null;
 
 	return (
@@ -83,7 +84,7 @@ export default function StepHeader({ stepIndex, onBack }: StepHeaderProps) {
 				{step.title}
 			</h2>
 			<p className="text-white/80 text-sm md:text-base mt-1 text-center">
-				Step {step.number} of {REGISTER_STEPS.length}: {step.subtitle}
+				Step {stepIndex + 1} of {visibleSteps.length}: {step.subtitle}
 			</p>
 		</div>
 	);
