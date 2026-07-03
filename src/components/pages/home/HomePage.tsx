@@ -9,7 +9,7 @@ import type { CatFormData } from "@/types/catForm";
 import { useGetMyCats } from "@/hooks/useGetMyCats";
 import useAuthStore from "@/app/stores/useAuthStore";
 import CatFormView from "./CatFormView";
-import CatIdentityView from "./CatIdentityView";
+import CatIdentityContainer from "./CatIdentityContainer";
 
 type ViewMode =
 	| { type: "home" }
@@ -43,8 +43,8 @@ export default function HomePage() {
 	/* ── Render sub-views ─────────────────────────────────────── */
 	if (view.type === "detail") {
 		return (
-			<CatIdentityView
-				cat={view.cat}
+			<CatIdentityContainer
+				listCat={view.cat}
 				onBack={() => setView({ type: "home" })}
 				onEdit={(cat) => setView({ type: "edit", cat })}
 			/>
