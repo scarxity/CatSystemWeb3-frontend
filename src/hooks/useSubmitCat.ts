@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useWallets } from "@privy-io/react-auth/solana";
-import { PublicKey } from "@solana/web3.js";
-import { BN } from "@coral-xyz/anchor";
+import { PublicKey, Transaction } from "@solana/web3.js";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
 
 import { useRegisterCat } from "@/components/pages/cats/register/context/RegisterCatContext";
 import { createCatProgram } from "@/lib/solana/catSystem";
@@ -100,7 +99,6 @@ async function uploadCatImages(images: CatImageUpload[]) {
    ================================================================ */
 
 export function useSubmitCat() {
-	const router = useRouter();
 	const { wallets } = useWallets();
 	const { formData } = useRegisterCat();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,10 +113,7 @@ export function useSubmitCat() {
 		const { basicInfo, bioProfile } = formData;
 
 		// Validate required images (first 4 slots must have files)
-		const requiredImages = basicInfo.images.slice(
-			0,
-			REQUIRED_IMAGE_SLOTS.length,
-		);
+		const requiredImages = basicInfo.images.slice(0, REQUIRED_IMAGE_SLOTS.length);
 		const missingRequired = requiredImages.filter((img) => !img.file);
 		if (missingRequired.length > 0) {
 			toast.error(
@@ -127,7 +122,6 @@ export function useSubmitCat() {
 			return;
 		}
 
-		// Filter to only images that have files
 		const imagesToUpload = basicInfo.images.filter((img) => img.file != null);
 
 		setIsSubmitting(true);
@@ -143,8 +137,7 @@ export function useSubmitCat() {
 			return;
 		}
 
-		// Step 2: on-chain create_cat
-		let catPda: PublicKey;
+		// Step 2: build and send a single transaction with createCat + all addCatImage
 		try {
 			const program = createCatProgram(wallet);
 			const ownerPubkey = new PublicKey(wallet.address);
@@ -157,15 +150,13 @@ export function useSubmitCat() {
 			let catCount = new BN(0);
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: Anchor generic Idl type
-				const counter = await (program.account as any).userCounter.fetch(
-					userCounterPda,
-				);
+				const counter = await (program.account as any).userCounter.fetch(userCounterPda);
 				catCount = counter.catCount as BN;
 			} catch {
 				// account doesn't exist yet (first registration)
 			}
 
-			[catPda] = PublicKey.findProgramAddressSync(
+			const [catPda] = PublicKey.findProgramAddressSync(
 				[
 					Buffer.from("cat"),
 					ownerPubkey.toBuffer(),
@@ -174,15 +165,13 @@ export function useSubmitCat() {
 				program.programId,
 			);
 
-			// Convert dateOfBirth to unix timestamp (seconds)
 			const dobTimestamp = basicInfo.dateOfBirth
 				? new BN(Math.floor(new Date(basicInfo.dateOfBirth).getTime() / 1000))
 				: new BN(0);
 
-			// Build the BioProfile struct — matches IDL exactly
 			const bioProfileArg = buildBioProfileArg(bioProfile);
 
-			await program.methods
+			const createCatIx = await program.methods
 				.createCat(
 					basicInfo.catName.slice(0, 32),
 					toGender(basicInfo.gender),
@@ -194,60 +183,38 @@ export function useSubmitCat() {
 					userCounter: userCounterPda,
 					cat: catPda,
 				})
-				.rpc();
+				.instruction();
 
-			toast.success("Cat registered on-chain!");
-		} catch (err) {
-			console.error("[register] on-chain create_cat failed:", err);
-			toast.error("Cat registration failed. Please try again.");
-			setIsSubmitting(false);
-			return;
-		}
+			// Derive each image PDA using its position (0, 1, 2…) — the cat doesn't
+			// exist on-chain yet so we can't fetch imageCount; we know it starts at 0.
+			const imageIxs = await Promise.all(
+				uploadedUrls.map((uploaded, i) => {
+					const imgDescription = imagesToUpload[i]?.description || "";
 
-		// Step 3: on-chain add_cat_image × N
-		try {
-			const program = createCatProgram(wallet);
+					const [catImagePda] = PublicKey.findProgramAddressSync(
+						[Buffer.from("cat-image"), catPda.toBuffer(), Buffer.from([i])],
+						program.programId,
+					);
 
-			for (let i = 0; i < uploadedUrls.length; i++) {
-				const uploaded = uploadedUrls[i];
-				const imgDescription = imagesToUpload[i]?.description || "";
-
-				// Fetch current image_count from the cat account
-				// biome-ignore lint/suspicious/noExplicitAny: Anchor generic Idl type
-				const catAccount = await (program.account as any).cat.fetch(catPda);
-				const imageCount = catAccount.imageCount as number;
-
-				const [catImagePda] = PublicKey.findProgramAddressSync(
-					[
-						Buffer.from("cat-image"),
-						catPda.toBuffer(),
-						Buffer.from([imageCount]),
-					],
-					program.programId,
-				);
-
-				await program.methods
-					.addCatImage(uploaded.url.slice(0, 256), imgDescription.slice(0, 64))
-					.accounts({
-						cat: catPda,
-						catImage: catImagePda,
-						payer: wallet.address,
-					})
-					.rpc();
-
-				toast.success(
-					`Image ${i + 1}/${uploadedUrls.length} uploaded on-chain`,
-				);
-			}
-
-			toast.success("All images registered! 🎉");
-			router.push("/");
-		} catch (err) {
-			console.error("[register] on-chain add_cat_image failed:", err);
-			toast.error(
-				"Some images failed to register on-chain. The cat was created successfully — you can add images later.",
+					return program.methods
+						.addCatImage(uploaded.url.slice(0, 256), imgDescription.slice(0, 64))
+						.accounts({
+							cat: catPda,
+							catImage: catImagePda,
+							payer: wallet.address,
+						})
+						.instruction();
+				}),
 			);
-			router.push("/");
+
+			const tx = new Transaction().add(createCatIx, ...imageIxs);
+			await (program.provider as AnchorProvider).sendAndConfirm(tx);
+
+			toast.success("Cat registered on-chain with all images!");
+			window.location.replace("/");
+		} catch (err) {
+			console.error("[register] on-chain transaction failed:", err);
+			toast.error("Cat registration failed. Please try again.");
 		} finally {
 			setIsSubmitting(false);
 		}
