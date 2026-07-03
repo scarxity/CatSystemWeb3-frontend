@@ -53,7 +53,7 @@ interface RegisterCatContextValue {
 	/** Whether the current step can proceed (all required fields filled) */
 	canProceed: boolean;
 	/** Visible steps based on user role */
-	visibleSteps: ReadonlyArray<typeof REGISTER_STEPS[number]>;
+	visibleSteps: ReadonlyArray<(typeof REGISTER_STEPS)[number]>;
 	/** Total number of visible steps */
 	totalVisibleSteps: number;
 }
@@ -67,17 +67,25 @@ function validateBasicInfo(data: BasicInfoData): boolean {
 	if (!data.catName.trim()) return false;
 	if (!data.dateOfBirth) return false;
 	const requiredImages = data.images.slice(0, 4);
-	return requiredImages.every(img => img.file !== null);
+	return requiredImages.every((img) => img.file !== null);
 }
 
 function validateBioProfile(data: BioProfileData): boolean {
 	return !!(
-		data.breed.trim() &&
-		data.coatColor.trim() &&
+		data.breed?.length > 0 &&
+		data.coatColor?.length > 0 &&
+		data.patternType?.category &&
+		data.patternType?.visualPattern &&
+		data.patternType?.color &&
 		data.coatLength &&
-		data.eyeColor.trim() &&
+		data.eyeColor?.trim() &&
 		data.earType &&
-		data.bodySize
+		data.bodySize &&
+		data.bodyType &&
+		data.bloodType &&
+		data.temperament &&
+		data.energyLevel &&
+		data.socialBehavior
 	);
 }
 
@@ -112,10 +120,7 @@ function validateOwnerData(data: OwnerDataData): boolean {
 		if (!breederValid) return false;
 	}
 
-	return !!(
-		data.ownershipProof.documentType &&
-		data.ownershipProof.document
-	);
+	return !!(data.ownershipProof.documentType && data.ownershipProof.document);
 }
 
 function validateFamilyTree(_data: FamilyTreeData): boolean {
@@ -124,13 +129,20 @@ function validateFamilyTree(_data: FamilyTreeData): boolean {
 
 function validateStep(step: number, formData: RegisterCatFormData): boolean {
 	switch (step) {
-		case 0: return validateBasicInfo(formData.basicInfo);
-		case 1: return validateBioProfile(formData.bioProfile);
-		case 2: return validateDnaProfile(formData.dnaProfile);
-		case 3: return validateHealthReport(formData.healthReport);
-		case 4: return validateOwnerData(formData.ownerData);
-		case 5: return validateFamilyTree(formData.familyTree);
-		default: return false;
+		case 0:
+			return validateBasicInfo(formData.basicInfo);
+		case 1:
+			return validateBioProfile(formData.bioProfile);
+		case 2:
+			return validateDnaProfile(formData.dnaProfile);
+		case 3:
+			return validateHealthReport(formData.healthReport);
+		case 4:
+			return validateOwnerData(formData.ownerData);
+		case 5:
+			return validateFamilyTree(formData.familyTree);
+		default:
+			return false;
 	}
 }
 
@@ -143,7 +155,10 @@ export function RegisterCatProvider({ children }: { children: ReactNode }) {
 	const [formData, setFormData] =
 		useState<RegisterCatFormData>(EMPTY_REGISTER_FORM);
 
-	const userData = user?.user_data as Record<string, unknown> | null | undefined;
+	const userData = user?.user_data as
+		| Record<string, unknown>
+		| null
+		| undefined;
 	const userType = String(userData?.type || "cat_user");
 	const isBreeder = userType === "breeder";
 
@@ -161,7 +176,7 @@ export function RegisterCatProvider({ children }: { children: ReactNode }) {
 	const stepIndexMap = useMemo(() => {
 		const map: number[] = [];
 		visibleSteps.forEach((step) => {
-			const actualIndex = REGISTER_STEPS.findIndex(s => s.key === step.key);
+			const actualIndex = REGISTER_STEPS.findIndex((s) => s.key === step.key);
 			map.push(actualIndex);
 		});
 		return map;
@@ -183,7 +198,8 @@ export function RegisterCatProvider({ children }: { children: ReactNode }) {
 		[],
 	);
 	const goToStep = useCallback(
-		(step: number) => setCurrentStep(Math.max(0, Math.min(step, totalVisibleSteps - 1))),
+		(step: number) =>
+			setCurrentStep(Math.max(0, Math.min(step, totalVisibleSteps - 1))),
 		[totalVisibleSteps],
 	);
 
@@ -307,9 +323,7 @@ export function RegisterCatProvider({ children }: { children: ReactNode }) {
 export function useRegisterCat(): RegisterCatContextValue {
 	const ctx = useContext(RegisterCatContext);
 	if (!ctx) {
-		throw new Error(
-			"useRegisterCat must be used within <RegisterCatProvider>",
-		);
+		throw new Error("useRegisterCat must be used within <RegisterCatProvider>");
 	}
 	return ctx;
 }
