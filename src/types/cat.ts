@@ -13,6 +13,13 @@ export type CatDNAProfile = {
 	earType: string;
 	bodySize: string;
 	eyeColor: string;
+	/* extended physical fields from bio_profiles */
+	patternCategory?: string;
+	patternVisual?: string;
+	patternColor?: string;
+	bodyType?: string;
+	distinctiveMarks?: string;
+	bloodType?: string;
 };
 
 export type CatTraits = {
@@ -20,6 +27,18 @@ export type CatTraits = {
 	dilutionGene: string;
 	whiteSpotting: string;
 	brachycephalicGene: string;
+};
+
+/** Personality/behaviour fields from bio_profiles */
+export type CatPersonalityProfile = {
+	personalityTrait?: string;
+	temperament?: string;
+	energyLevel?: string;
+	socialBehavior?: string;
+	specialSkill?: string;
+	likes?: string;
+	dislikes?: string;
+	additionalNotes?: string;
 };
 
 export type CatAncestry = {
@@ -68,6 +87,7 @@ export type CatBio = {
 	diet: string;
 	favoriteFood: string;
 	specialNotes?: string;
+	pattern_category: string;
 };
 
 /* ── Owner ──────────────────────────────────────────────── */
@@ -144,6 +164,7 @@ export type Cat = {
 	// DNA tab
 	dnaProfile?: CatDNAProfile;
 	traits?: CatTraits;
+	personalityProfile?: CatPersonalityProfile;
 	ancestry?: CatAncestry;
 	breedComposition?: CatBreedComposition;
 	geneticTraits?: CatGeneticTrait[];

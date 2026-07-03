@@ -63,6 +63,21 @@ interface ApiCatDetail {
 		body_size: string;
 		personality_trait: string;
 		description: string;
+		/* extended physical fields */
+		pattern_category: string;
+		pattern_visual: string;
+		pattern_color: string;
+		body_type: string;
+		distinctive_marks: string;
+		blood_type: string;
+		/* personality / behaviour fields */
+		temperament: string;
+		energy_level: string;
+		social_behavior: string;
+		special_skill: string;
+		likes: string;
+		dislikes: string;
+		additional_notes: string;
 	};
 }
 
@@ -101,6 +116,23 @@ async function fetchCat(pda: string): Promise<Cat> {
 			earType: bio.ear_type || "Unknown",
 			bodySize: bio.body_size || "Unknown",
 			eyeColor: bio.eye_color || "",
+			patternCategory: bio.pattern_category || "",
+			patternVisual: bio.pattern_visual || "",
+			patternColor: bio.pattern_color || "",
+			bodyType: bio.body_type || "",
+			distinctiveMarks: bio.distinctive_marks || "",
+			bloodType: bio.blood_type || "",
+		},
+		// Personality / behaviour – from bio_profiles
+		personalityProfile: {
+			personalityTrait: bio.personality_trait || "",
+			temperament: bio.temperament || "",
+			energyLevel: bio.energy_level || "",
+			socialBehavior: bio.social_behavior || "",
+			specialSkill: bio.special_skill || "",
+			likes: bio.likes || "",
+			dislikes: bio.dislikes || "",
+			additionalNotes: bio.additional_notes || "",
 		},
 		// Bio
 		bio:
@@ -114,6 +146,7 @@ async function fetchCat(pda: string): Promise<Cat> {
 						indoor: false,
 						diet: "",
 						favoriteFood: "",
+						pattern_category: "",
 					}
 				: undefined,
 		owner: {
@@ -124,6 +157,7 @@ async function fetchCat(pda: string): Promise<Cat> {
 			totalCats: 0,
 			verificationStatus: "Verified" as const,
 		},
+		
 	};
 }
 
