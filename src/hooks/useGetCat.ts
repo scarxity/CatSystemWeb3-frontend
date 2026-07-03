@@ -46,7 +46,7 @@ function parseDescription(description: string | undefined): {
 	return { personality: [], about: description };
 }
 
-/** Shape returned by GET /cats/getindividual/:pda */
+/** Shape returned by GET /cats/:pda */
 interface ApiCatDetail {
 	cat_pda: string;
 	owner_wallet: string;
@@ -87,7 +87,7 @@ interface GetIndividualResponse {
 
 async function fetchCat(pda: string): Promise<Cat> {
 	const { data } = await api.get<GetIndividualResponse>(
-		`/cats/getindividual/${pda}`,
+		`/cats/${pda}`,
 	);
 	const c = data.cat;
 	const bio = c.bio_profile;

@@ -26,7 +26,7 @@ function formatRegisteredAt(blockTime: number | null): string | undefined {
 	});
 }
 
-/** Shape returned by GET /cats/getlist — only the fields the list card renders. */
+/** Shape returned by GET /cats — only the fields the list card renders. */
 interface ApiCat {
 	cat_pda: string;
 	name: string;
@@ -41,7 +41,7 @@ interface GetListResponse {
 }
 
 async function fetchMyCats(): Promise<Cat[]> {
-	const { data } = await api.get<GetListResponse>("/cats/getlist");
+	const { data } = await api.get<GetListResponse>("/cats");
 
 	return data.cats.map((c, i) => ({
 		id: c.cat_pda,
