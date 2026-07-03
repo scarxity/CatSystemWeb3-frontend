@@ -667,7 +667,7 @@ export function DnaProfileFields() {
    FULL SCREEN — mobile / tablet view
    ================================================================ */
 export default function DnaProfileStep() {
-	const { currentStep, goNext, goBack, isFirstStep, isLastStep } = useRegisterCat();
+	const { currentStep, goNext, goBack, isFirstStep, isLastStep, canProceed } = useRegisterCat();
 
 	return (
 		<div className="min-h-screen flex flex-col bg-gray-50">
@@ -689,6 +689,7 @@ export default function DnaProfileStep() {
 				showSkip
 				isFirstStep={isFirstStep}
 				isLastStep={isLastStep}
+				canProceed={canProceed}
 			/>
 		</div>
 	);

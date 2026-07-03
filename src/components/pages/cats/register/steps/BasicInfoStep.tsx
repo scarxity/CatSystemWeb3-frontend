@@ -376,7 +376,7 @@ export function BasicInfoFields() {
    FULL SCREEN — mobile / tablet view
    ================================================================ */
 export default function BasicInfoStep() {
-	const { currentStep, goNext, goBack, isFirstStep } = useRegisterCat();
+	const { currentStep, goNext, goBack, isFirstStep, canProceed } = useRegisterCat();
 
 	return (
 		<div className="min-h-screen flex flex-col bg-gray-50">
@@ -391,7 +391,7 @@ export default function BasicInfoStep() {
 				</div>
 			</div>
 			
-			<StepNavButtons onBack={goBack} onNext={goNext} isFirstStep={isFirstStep} />
+			<StepNavButtons onBack={goBack} onNext={goNext} isFirstStep={isFirstStep} canProceed={canProceed} />
 		</div>
 	);
 }
