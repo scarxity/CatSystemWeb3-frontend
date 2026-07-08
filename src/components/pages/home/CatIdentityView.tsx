@@ -8,6 +8,7 @@ import DNATab from "@/components/cat/tabs/DNATab";
 import FamilyTab from "@/components/cat/tabs/FamilyTab";
 import HealthTab from "@/components/cat/tabs/HealthTab";
 import OwnerTab from "@/components/cat/tabs/OwnerTab";
+import PhotosTab from "@/components/cat/tabs/PhotosTab";
 import type { Cat } from "@/types/cat";
 
 interface CatIdentityViewProps {
@@ -22,22 +23,29 @@ export default function CatIdentityView({
 	onBack,
 	onEdit,
 }: CatIdentityViewProps) {
-	const [activeTab, setActiveTab] = useState("dna");
+	const [activeTab, setActiveTab] = useState("bio");
 
 	const tabs = [
-		{
-			id: "dna",
-			label: "DNA",
-			icon: "🧬",
-			activeColor: "text-[#4359ea]",
-			activeBorder: "border-[#4359ea]",
-		},
 		{
 			id: "bio",
 			label: "Bio",
 			icon: "🐱",
 			activeColor: "text-purple-600",
 			activeBorder: "border-purple-600",
+		},
+		{
+			id: "photos",
+			label: "Photos",
+			icon: "📷",
+			activeColor: "text-pink-500",
+			activeBorder: "border-pink-500",
+		},
+		{
+			id: "dna",
+			label: "DNA",
+			icon: "🧬",
+			activeColor: "text-[#4359ea]",
+			activeBorder: "border-[#4359ea]",
 		},
 		{
 			id: "health",
@@ -47,18 +55,18 @@ export default function CatIdentityView({
 			activeBorder: "border-emerald-600",
 		},
 		{
-			id: "owner",
-			label: "Owner",
-			icon: "👤",
-			activeColor: "text-[#4359ea]",
-			activeBorder: "border-[#4359ea]",
-		},
-		{
 			id: "family",
 			label: "Family",
 			icon: "👨‍👩‍👧",
 			activeColor: "text-green-500",
 			activeBorder: "border-green-500",
+		},
+		{
+			id: "owner",
+			label: "Owner",
+			icon: "👤",
+			activeColor: "text-[#4359ea]",
+			activeBorder: "border-[#4359ea]",
 		},
 	];
 
@@ -200,11 +208,12 @@ export default function CatIdentityView({
 
 					{/* ── Tabs Content ────────────────────────────────── */}
 					<div className="p-4 md:p-5 min-h-[400px] bg-white">
-						{activeTab === "dna" && <DNATab cat={cat} />}
 						{activeTab === "bio" && <BioTab cat={cat} />}
+						{activeTab === "photos" && <PhotosTab cat={cat} />}
+						{activeTab === "dna" && <DNATab cat={cat} />}
 						{activeTab === "health" && <HealthTab cat={cat} />}
-						{activeTab === "owner" && <OwnerTab cat={cat} />}
 						{activeTab === "family" && <FamilyTab cat={cat} />}
+						{activeTab === "owner" && <OwnerTab cat={cat} />}
 					</div>
 				</section>
 			</div>
