@@ -95,6 +95,7 @@ export default function AccountPage() {
 	const userData = user?.user_data as Record<string, unknown> | null | undefined;
 	const ownerName = String(userData?.name || "");
 	const userType = String(userData?.type || "cat lover");
+	const bio = String(userData?.bio || "");
 	const isRequestPending = userData?.status === "pending";
 	const profilePictureUrl = resolvePictureUrl(
 		userData?.profile_picture_url as string | null | undefined,
@@ -165,6 +166,9 @@ export default function AccountPage() {
 									{userType === 'breeder' ? 'Breeder' : 'Cat Lover'}
 								</span>
 							</div>
+							<p className={`mt-1.5 text-sm leading-relaxed line-clamp-2 ${bio ? "text-gray-600" : "text-gray-400 italic"}`}>
+								{bio || "No bio yet"}
+							</p>
 							<div className="flex flex-col mt-1 space-y-0.5">
 								<span className="flex items-center gap-1.5 text-gray-500 text-[15px] md:text-base">
 									Connected:{" "}
