@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, CheckCircle2, Copy, Pencil } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Copy, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import BioTab from "@/components/cat/tabs/BioTab";
@@ -23,6 +23,23 @@ export default function CatIdentityView({
 	onEdit,
 }: CatIdentityViewProps) {
 	const [activeTab, setActiveTab] = useState("dna");
+	const [copied, setCopied] = useState(false);
+
+	const formatAddress = (address: string) => {
+		if (!address) return "";
+		if (address.length <= 12) return address;
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
+	};
+
+	const handleCopy = async () => {
+		try {
+			await navigator.clipboard.writeText(cat.id);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000);
+		} catch (err) {
+			console.error("Failed to copy address:", err);
+		}
+	};
 
 	const tabs = [
 		{
@@ -131,14 +148,25 @@ export default function CatIdentityView({
 									)}
 								</div>
 
-								<p className="text-[12px] text-gray-400 mb-0.5">Cat ID</p>
+								<p className="text-[12px] text-gray-400 mb-0.5">Cat Address</p>
 								<div className="flex items-center gap-1.5 mb-2">
-									<span className="text-[14px] font-bold text-gray-700 tracking-wide">
+									<span className="text-[14px] font-bold text-gray-700 tracking-wide font-mono">
 										{cat.tokenId === "#0012"
-											? "PC-7K8D-9H2F"
-											: `PC-${cat.id.substring(0, 4).toUpperCase()}`}
+											? "7K8D-9H2F"
+											: formatAddress(cat.id)}
 									</span>
-									<Copy className="w-3.5 h-3.5 text-[#4359ea] cursor-pointer" />
+									<button
+										type="button"
+										onClick={handleCopy}
+										className="inline-flex items-center justify-center text-[#4359ea] hover:text-blue-700 transition-colors"
+										title="Copy address"
+									>
+										{copied ? (
+											<Check className="w-3.5 h-3.5 text-emerald-500 animate-in fade-in" />
+										) : (
+											<Copy className="w-3.5 h-3.5" />
+										)}
+									</button>
 								</div>
 
 								{cat.verified && (
