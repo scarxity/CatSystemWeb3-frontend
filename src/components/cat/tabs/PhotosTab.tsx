@@ -36,7 +36,7 @@ export default function PhotosTab({ cat }: { cat: Cat }) {
 				</div>
 
 				{/* Grid */}
-				<div className="grid grid-cols-2 gap-2.5">
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 lg:gap-0">
 					{photos.map((photo, i) => (
 						<button
 							key={photo.url + i}
@@ -55,7 +55,7 @@ export default function PhotosTab({ cat }: { cat: Cat }) {
 							{/* Description overlay */}
 							{photo.description && (
 								<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2.5 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-									<p className="text-white text-[10px] font-semibold truncate">
+									<p className="text-white text-xs font-semibold truncate">
 										{photo.description}
 									</p>
 								</div>
