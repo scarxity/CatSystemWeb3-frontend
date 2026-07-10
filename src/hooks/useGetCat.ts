@@ -79,6 +79,7 @@ interface ApiCatDetail {
 		dislikes: string;
 		additional_notes: string;
 	};
+	images?: { url: string; description: string | null }[];
 }
 
 interface GetIndividualResponse {
@@ -157,7 +158,16 @@ async function fetchCat(pda: string): Promise<Cat> {
 			totalCats: 0,
 			verificationStatus: "Verified" as const,
 		},
-		
+		// Photos — prefer the indexed images array, fall back to main image_url
+		photos:
+			c.images && c.images.length > 0
+				? c.images.map((img) => ({
+						url: resolveImageUrl(img.url),
+						description: img.description ?? undefined,
+				  }))
+				: c.image_url
+				  ? [{ url: resolveImageUrl(c.image_url), description: "Main photo" }]
+				  : undefined,
 	};
 }
 

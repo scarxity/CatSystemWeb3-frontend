@@ -90,6 +90,13 @@ export type CatBio = {
 	pattern_category: string;
 };
 
+/* ── Photos ────────────────────────────────────────────── */
+
+export type CatPhoto = {
+	url: string;
+	description?: string;
+};
+
 /* ── Owner ──────────────────────────────────────────────── */
 
 export type CatOwner = {
@@ -177,6 +184,9 @@ export type Cat = {
 	// Health tab
 	medicalRecords?: CatMedicalRecord[];
 	healthSummary?: CatHealthSummary;
+
+	// Photos tab
+	photos?: CatPhoto[];
 
 	// Owner tab
 	owner?: CatOwner;
