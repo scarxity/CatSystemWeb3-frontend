@@ -63,3 +63,25 @@ export type OnboardResponse = {
 	bio?: string;
 	onboarded: true;
 };
+
+// PUT /users/profile
+export type UpdateProfileRequest = {
+	name: string;
+	bio?: string;
+};
+
+export type UpdateProfileResponse = {
+	message: string;
+	user: {
+		wallet_address: string;
+		name: string;
+		bio: string;
+		profile_picture_url: string | null;
+	};
+};
+
+// POST /users/profile-picture
+export type UpdateProfilePictureResponse = {
+	message: string;
+	profile_picture_url: string;
+};

@@ -17,8 +17,18 @@ import Link from "next/link";
 import { usePrivy } from "@privy-io/react-auth";
 import useAuthStore from "@/app/stores/useAuthStore";
 import { removeToken } from "@/lib/cookies";
+import { baseURL } from "@/lib/api";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useCountMyCats } from "@/hooks/useCountMyCats";
+
+const FALLBACK_AVATAR =
+	"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=250&auto=format&fit=crop";
+
+function resolvePictureUrl(url: string | null | undefined): string {
+	if (!url) return FALLBACK_AVATAR;
+	if (url.startsWith("http")) return url;
+	return `${baseURL ?? ""}${url}`;
+}
 
 interface MenuItemProps {
 	icon: React.ReactNode;
@@ -85,7 +95,11 @@ export default function AccountPage() {
 	const userData = user?.user_data as Record<string, unknown> | null | undefined;
 	const ownerName = String(userData?.name || "");
 	const userType = String(userData?.type || "cat lover");
+	const bio = String(userData?.bio || "");
 	const isRequestPending = userData?.status === "pending";
+	const profilePictureUrl = resolvePictureUrl(
+		userData?.profile_picture_url as string | null | undefined,
+	);
 
 	const walletAddress = user?.wallet || "";
 
@@ -138,7 +152,7 @@ export default function AccountPage() {
 					<div className="flex items-center w-full">
 						<div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] md:w-[100px] md:h-[100px] rounded-full overflow-hidden shrink-0 bg-blue-100 ring-4 ring-white shadow-sm">
 							<Image
-								src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=250&auto=format&fit=crop"
+								src={profilePictureUrl}
 								alt="Profile"
 								fill
 								className="object-cover"
@@ -152,6 +166,9 @@ export default function AccountPage() {
 									{userType === 'breeder' ? 'Breeder' : 'Cat Lover'}
 								</span>
 							</div>
+							<p className={`mt-1.5 text-sm leading-relaxed line-clamp-2 ${bio ? "text-gray-600" : "text-gray-400 italic"}`}>
+								{bio || "No bio yet"}
+							</p>
 							<div className="flex flex-col mt-1 space-y-0.5">
 								<span className="flex items-center gap-1.5 text-gray-500 text-[15px] md:text-base">
 									Connected:{" "}
@@ -184,10 +201,13 @@ export default function AccountPage() {
 									Request Breeder
 								</Link>
 							)}
-							<button type="button" className="flex items-center px-5 py-2.5 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
+							<Link
+								href="/account/edit-profile"
+								className="flex items-center px-5 py-2.5 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm"
+							>
 								<Pencil className="w-4 h-4 mr-2" />
 								Edit Profile
-							</button>
+							</Link>
 						</div>
 					</div>
 					{/* Mobile Edit Button */}
@@ -201,10 +221,13 @@ export default function AccountPage() {
 								Request Breeder
 							</Link>
 						)}
-						<button type="button" className="flex justify-center items-center px-4 py-2 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm">
+						<Link
+							href="/account/edit-profile"
+							className="flex justify-center items-center px-4 py-2 border border-gray-200 rounded-xl text-blue-600 font-medium text-sm hover:bg-blue-50 transition-colors shadow-sm"
+						>
 							<Pencil className="w-4 h-4 mr-2" />
 							Edit Profile
-						</button>
+						</Link>
 					</div>
 				</div>
 
