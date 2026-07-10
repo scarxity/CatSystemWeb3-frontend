@@ -151,9 +151,7 @@ export default function CatIdentityView({
 								<p className="text-[12px] text-gray-400 mb-0.5">Cat Address</p>
 								<div className="flex items-center gap-1.5 mb-2">
 									<span className="text-[14px] font-bold text-gray-700 tracking-wide font-mono">
-										{cat.tokenId === "#0012"
-											? "7K8D-9H2F"
-											: formatAddress(cat.id)}
+										{formatAddress(cat.id)}
 									</span>
 									<button
 										type="button"
