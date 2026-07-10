@@ -26,6 +26,8 @@ function buildConicGradient(data: { percentage: number; color: string }[]) {
 export default function BioTab({ cat }: { cat: Cat }) {
 	return (
 		<div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+			{/* ─── Physical & Personality Side-by-Side on Desktop ──── */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 			{/* ─── Card 1: Genetic Profile ─────────────────────────── */}
 			<div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
 				<div className="flex items-center gap-2 mb-3 border-b border-gray-200 pb-3">
@@ -114,6 +116,69 @@ export default function BioTab({ cat }: { cat: Cat }) {
 						</span>
 					</div>
 				</div>
+			</div>
+
+			{/* ─── Card 5: Traits & Markers (legacy card) ──────────── */}
+			<div className="bg-[#FAF5FF] border border-[#E9D5FF] rounded-2xl p-4 shadow-sm">
+				<div className="flex items-center gap-2 mb-3 border-b border-purple-200 pb-3">
+					<Image
+						src="/assets/Identification paw simbol.png"
+						alt="Paw"
+						width={22}
+						height={22}
+						className="object-contain"
+					/>
+					<h3 className="font-bold text-purple-700 text-[15px]">
+						Personality
+					</h3>
+				</div>
+				<div className="space-y-3">
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Temperament</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.temperament || "Unknown"}
+						</span>
+					</div>
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Energy Level</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.energyLevel || "Unknown"}
+						</span>
+					</div>
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Social Behavior</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.socialBehavior || "Unknown"}
+						</span>
+					</div>
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Special Skill</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.specialSkill || "Unknown"}
+						</span>
+					</div>
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Likes</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.likes || "Unknown"}
+						</span>
+					</div>
+					<div className="flex justify-between items-center text-[13px]">
+						<span className="text-gray-500">Dislikes</span>
+						<span className="font-semibold text-gray-900">
+							{cat.personalityProfile?.dislikes || "Unknown"}
+						</span>
+					</div>
+					{cat.personalityProfile?.additionalNotes ? (
+						<div className="flex justify-between items-start text-[13px]">
+							<span className="text-gray-500 flex-shrink-0">Additional Notes</span>
+							<span className="font-semibold text-gray-900 text-right ml-4">
+								{cat.personalityProfile.additionalNotes}
+							</span>
+						</div>
+					) : null}
+				</div>
+			</div>
 			</div>
 
 			{/* ─── Card 2: Breed Composition (Pie Chart) ────────────── */}
@@ -267,73 +332,7 @@ export default function BioTab({ cat }: { cat: Cat }) {
 				</div>
 			)}
 
-			{/* ─── Card 5: Traits & Markers (legacy card) ──────────── */}
-			<div className="bg-[#FAF5FF] border border-[#E9D5FF] rounded-2xl p-4 shadow-sm">
-				<div className="flex items-center gap-2 mb-3 border-b border-purple-200 pb-3">
-					<Image
-						src="/assets/Identification paw simbol.png"
-						alt="Paw"
-						width={22}
-						height={22}
-						className="object-contain"
-					/>
-					<h3 className="font-bold text-purple-700 text-[15px]">
-						Personality
-					</h3>
-				</div>
-				<div className="space-y-3">
-					{/* <div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Personality Trait</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.personalityTrait || "Unknown"}
-						</span>
-					</div> */}
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Temperament</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.temperament || "Unknown"}
-						</span>
-					</div>
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Energy Level</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.energyLevel || "Unknown"}
-						</span>
-					</div>
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Social Behavior</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.socialBehavior || "Unknown"}
-						</span>
-					</div>
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Special Skill</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.specialSkill || "Unknown"}
-						</span>
-					</div>
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Likes</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.likes || "Unknown"}
-						</span>
-					</div>
-					<div className="flex justify-between items-center text-[13px]">
-						<span className="text-gray-500">Dislikes</span>
-						<span className="font-semibold text-gray-900">
-							{cat.personalityProfile?.dislikes || "Unknown"}
-						</span>
-					</div>
-					{cat.personalityProfile?.additionalNotes ? (
-						<div className="flex justify-between items-start text-[13px]">
-							<span className="text-gray-500 flex-shrink-0">Additional Notes</span>
-							<span className="font-semibold text-gray-900 text-right ml-4">
-								{cat.personalityProfile.additionalNotes}
-							</span>
-						</div>
-					) : null}
-				</div>
-			</div>
+
 
 			{/* ─── Card 6: Blockchain Verification ─────────────────── */}
 			{cat.blockchainVerification && (
