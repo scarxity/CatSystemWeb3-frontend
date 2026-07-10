@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, CheckCircle2, Copy, Pencil } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Copy, Pencil } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import BioTab from "@/components/cat/tabs/BioTab";
@@ -139,14 +139,23 @@ export default function CatIdentityView({
 									)}
 								</div>
 
-								<p className="text-[12px] text-gray-400 mb-0.5">Cat ID</p>
+								<p className="text-[12px] text-gray-400 mb-0.5">Cat Address</p>
 								<div className="flex items-center gap-1.5 mb-2">
-									<span className="text-[14px] font-bold text-gray-700 tracking-wide">
-										{cat.tokenId === "#0012"
-											? "PC-7K8D-9H2F"
-											: `PC-${cat.id.substring(0, 4).toUpperCase()}`}
+									<span className="text-[14px] font-bold text-gray-700 tracking-wide font-mono">
+										{formatAddress(cat.id)}
 									</span>
-									<Copy className="w-3.5 h-3.5 text-[#4359ea] cursor-pointer" />
+									<button
+										type="button"
+										onClick={handleCopy}
+										className="inline-flex items-center justify-center text-[#4359ea] hover:text-blue-700 transition-colors"
+										title="Copy address"
+									>
+										{copied ? (
+											<Check className="w-3.5 h-3.5 text-emerald-500 animate-in fade-in" />
+										) : (
+											<Copy className="w-3.5 h-3.5" />
+										)}
+									</button>
 								</div>
 
 								{cat.verified && (
