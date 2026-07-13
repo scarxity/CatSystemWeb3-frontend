@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { ArrowLeft, User, FileText, Camera, Loader2, X } from "lucide-react";
+import { ArrowLeft, User, FileText, Camera, Loader2, X, Mail, Phone, MapPin, Globe, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,11 @@ import { useUpdateProfilePicture } from "@/hooks/useUpdateProfilePicture";
 type EditProfileFormData = {
 	name: string;
 	bio?: string;
+	email: string;
+	phone_number?: string;
+	city: string;
+	country: string;
+	birthdate: string;
 };
 
 const FALLBACK_AVATAR = "/assets/login/cat-avatar.png";
@@ -50,6 +55,11 @@ export default function EditProfilePage() {
 		defaultValues: {
 			name: String(userData?.name ?? user?.name ?? ""),
 			bio: String(userData?.bio ?? user?.bio ?? ""),
+			email: String(userData?.email ?? ""),
+			phone_number: String(userData?.phone_number ?? ""),
+			city: String(userData?.city ?? ""),
+			country: String(userData?.country ?? ""),
+			birthdate: String(userData?.birthdate ?? ""),
 		},
 	});
 
@@ -92,6 +102,11 @@ export default function EditProfilePage() {
 			await updateProfile.mutateAsync({
 				name: data.name.trim(),
 				bio: data.bio?.trim() || "",
+				email: data.email.trim(),
+				phone_number: data.phone_number?.trim() || "",
+				city: data.city.trim(),
+				country: data.country.trim(),
+				birthdate: data.birthdate,
 			});
 
 			toast.success("Profile updated successfully!");
@@ -204,6 +219,170 @@ export default function EditProfilePage() {
 							{errors.name && (
 								<p className="mt-1.5 text-xs text-red-500">
 									{errors.name.message}
+								</p>
+							)}
+						</div>
+
+						{/* Email */}
+						<div>
+							<label
+								htmlFor="email"
+								className="mb-1.5 block text-sm font-medium text-gray-700"
+							>
+								Email
+							</label>
+							<div className="relative">
+								<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<Mail className="h-4 w-4 text-gray-400" />
+								</div>
+								<input
+									id="email"
+									type="email"
+									placeholder="Enter your email"
+									className={`w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+										errors.email
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+									}`}
+									{...register("email", {
+										required: "Email is required",
+										pattern: {
+											value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+											message: "Invalid email address",
+										},
+									})}
+								/>
+							</div>
+							{errors.email && (
+								<p className="mt-1.5 text-xs text-red-500">
+									{errors.email.message}
+								</p>
+							)}
+						</div>
+
+						{/* Phone Number */}
+						<div>
+							<label
+								htmlFor="phone_number"
+								className="mb-1.5 block text-sm font-medium text-gray-700"
+							>
+								Phone Number{" "}
+								<span className="font-normal text-gray-400">(optional)</span>
+							</label>
+							<div className="relative">
+								<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<Phone className="h-4 w-4 text-gray-400" />
+								</div>
+								<input
+									id="phone_number"
+									type="tel"
+									inputMode="numeric"
+									placeholder="Enter your phone number"
+									className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									{...register("phone_number", {
+										pattern: {
+											value: /^[0-9]*$/,
+											message: "Phone number must contain only numbers",
+										},
+									})}
+								/>
+							</div>
+						</div>
+
+						{/* City */}
+						<div>
+							<label
+								htmlFor="city"
+								className="mb-1.5 block text-sm font-medium text-gray-700"
+							>
+								City
+							</label>
+							<div className="relative">
+								<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<MapPin className="h-4 w-4 text-gray-400" />
+								</div>
+								<input
+									id="city"
+									type="text"
+									placeholder="Enter your city"
+									className={`w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+										errors.city
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+									}`}
+									{...register("city", {
+										required: "City is required",
+									})}
+								/>
+							</div>
+							{errors.city && (
+								<p className="mt-1.5 text-xs text-red-500">
+									{errors.city.message}
+								</p>
+							)}
+						</div>
+
+						{/* Country */}
+						<div>
+							<label
+								htmlFor="country"
+								className="mb-1.5 block text-sm font-medium text-gray-700"
+							>
+								Country
+							</label>
+							<div className="relative">
+								<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<Globe className="h-4 w-4 text-gray-400" />
+								</div>
+								<input
+									id="country"
+									type="text"
+									placeholder="Enter your country"
+									className={`w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+										errors.country
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+									}`}
+									{...register("country", {
+										required: "Country is required",
+									})}
+								/>
+							</div>
+							{errors.country && (
+								<p className="mt-1.5 text-xs text-red-500">
+									{errors.country.message}
+								</p>
+							)}
+						</div>
+
+						{/* Birthdate */}
+						<div>
+							<label
+								htmlFor="birthdate"
+								className="mb-1.5 block text-sm font-medium text-gray-700"
+							>
+								Birthdate
+							</label>
+							<div className="relative">
+								<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<Calendar className="h-4 w-4 text-gray-400" />
+								</div>
+								<input
+									id="birthdate"
+									type="date"
+									className={`w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+										errors.birthdate
+											? "border-red-300 focus:border-red-500 focus:ring-red-500"
+											: "border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+									}`}
+									{...register("birthdate", {
+										required: "Birthdate is required",
+									})}
+								/>
+							</div>
+							{errors.birthdate && (
+								<p className="mt-1.5 text-xs text-red-500">
+									{errors.birthdate.message}
 								</p>
 							)}
 						</div>
