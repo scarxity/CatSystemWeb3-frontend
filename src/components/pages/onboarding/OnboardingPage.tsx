@@ -163,7 +163,7 @@ export default function OnboardingPage() {
 								htmlFor="name"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								Name
+								Name <span className="text-red-500">*</span>
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -198,7 +198,7 @@ export default function OnboardingPage() {
 								htmlFor="email"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								Email
+								Email <span className="text-red-500">*</span>
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -273,7 +273,7 @@ export default function OnboardingPage() {
 								htmlFor="city"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								City
+								City <span className="text-red-500">*</span>
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -290,6 +290,8 @@ export default function OnboardingPage() {
 									} text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2`}
 									{...register("city", {
 										required: "City is required",
+										validate: (v) =>
+											v.trim() !== "" || "City is required",
 									})}
 								/>
 							</div>
@@ -306,7 +308,7 @@ export default function OnboardingPage() {
 								htmlFor="country"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								Country
+								Country <span className="text-red-500">*</span>
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -323,6 +325,8 @@ export default function OnboardingPage() {
 									} text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2`}
 									{...register("country", {
 										required: "Country is required",
+										validate: (v) =>
+											v.trim() !== "" || "Country is required",
 									})}
 								/>
 							</div>
@@ -339,7 +343,7 @@ export default function OnboardingPage() {
 								htmlFor="birthdate"
 								className="block text-sm font-medium text-gray-700 mb-1.5"
 							>
-								Birthdate
+								Birthdate <span className="text-red-500">*</span>
 							</label>
 							<div className="relative">
 								<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
