@@ -49,18 +49,33 @@ export type MeResponse = {
 	name?: string;
 	username?: string;
 	bio?: string;
+	email?: string;
+	phone_number?: string;
+	city?: string;
+	country?: string;
+	birthdate?: string;
 };
 
 // POST /users/onboard
 export type OnboardRequest = {
 	name: string;
 	bio?: string;
+	email: string;
+	phone_number?: string;
+	city: string;
+	country: string;
+	birthdate: string;
 };
 
 export type OnboardResponse = {
 	wallet: string;
 	name: string;
 	bio?: string;
+	email: string;
+	phone_number?: string;
+	city: string;
+	country: string;
+	birthdate: string;
 	onboarded: true;
 };
 
@@ -68,6 +83,11 @@ export type OnboardResponse = {
 export type UpdateProfileRequest = {
 	name: string;
 	bio?: string;
+	email?: string;
+	phone_number?: string;
+	city?: string;
+	country?: string;
+	birthdate?: string;
 };
 
 export type UpdateProfileResponse = {
@@ -77,6 +97,11 @@ export type UpdateProfileResponse = {
 		name: string;
 		bio: string;
 		profile_picture_url: string | null;
+		email?: string;
+		phone_number?: string;
+		city?: string;
+		country?: string;
+		birthdate?: string;
 	};
 };
 
